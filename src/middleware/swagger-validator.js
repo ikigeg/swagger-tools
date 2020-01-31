@@ -29,7 +29,7 @@ var async = require('async');
 var debug = require('debug')('swagger-tools:middleware:validator');
 
 var cHelpers = require('../lib/helpers');
-var mHelpers = require('../../middleware/helpers');
+var mHelpers = require('./helpers');
 var validators = require('../lib/validators');
 
 var sendData = function (swaggerVersion, res, data, encoding, skipped) {

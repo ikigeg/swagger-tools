@@ -106,11 +106,11 @@ gulp.task('lint', function () {
       './bin/swagger-tools',
       './index.js',
       './src/lib/**/*.js',
-      './middleware/helpers.js',
-      './middleware/swagger-*.js',
+      './src/middleware/helpers.js',
+      './src/middleware/swagger-*.js',
       './test/**/*.js',
       './gulpfile.js',
-      '!./middleware/swagger-ui/**/*.js',
+      '!./src/middleware/swagger-ui/**/*.js',
       '!./test/**/test-specs-browser.js',
       '!./test/browser/vendor/*.js',
     ])
@@ -125,11 +125,11 @@ gulp.task('eslint', function () {
       './bin/swagger-tools',
       './index.js',
       './src/lib/**/*.js',
-      './middleware/helpers.js',
-      './middleware/swagger-*.js',
+      './src/middleware/helpers.js',
+      './src/middleware/swagger-*.js',
       './test/**/*.js',
       './gulpfile.js',
-      '!./middleware/swagger-ui/**/*.js',
+      '!./src/middleware/swagger-ui/**/*.js',
       '!./test/**/test-specs-browser.js',
       '!./test/browser/vendor/*.js',
     ])
@@ -145,9 +145,9 @@ gulp.task('test-node', function () {
       .src([
         './index.js',
         './src/lib/**/*.js',
-        './middleware/helpers.js',
-        './middleware/swagger-*.js',
-        '!./middleware/swagger-ui/**/*.js',
+        './src/middleware/helpers.js',
+        './src/middleware/swagger-*.js',
+        '!./src/middleware/swagger-ui/**/*.js',
         '!./test/**/test-specs-browser.js',
       ])
       .pipe($.istanbul())

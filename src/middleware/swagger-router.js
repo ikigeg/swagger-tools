@@ -25,11 +25,12 @@
 'use strict';
 
 var _ = require('lodash');
-var cHelpers = require('../src/lib/helpers');
-var debug = require('debug')('swagger-tools:middleware:router');
 var fs = require('fs');
-var mHelpers = require('./helpers');
 var path = require('path');
+var debug = require('debug')('swagger-tools:middleware:router');
+
+var cHelpers = require('../lib/helpers');
+var mHelpers = require('./helpers');
 
 var defaultOptions = {
   controllers: {},
