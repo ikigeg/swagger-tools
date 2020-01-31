@@ -262,4 +262,4 @@ gulp.task('test', function (cb) {
 });
 
 // gulp.task('default', ['eslint', 'test']);
-gulp.task('default', ['eslint', 'test']);
+gulp.task('default', ['lint', 'test']);
