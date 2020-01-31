@@ -9,4 +9,4 @@ test/2.0/test-specs-browser.js
 test/*/browser
 .tern-project
 .nyc_output
-browser/*.js
+browser/swagger-tools*.js
