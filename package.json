@@ -4,8 +4,10 @@
   "description": "Various tools for using and integrating with Swagger.",
   "main": "index.js",
   "scripts": {
-    "test": "gulp",
-    "test-debug": "node --debug-brk node_modules/.bin/gulp"
+    "gulp-test": "gulp",
+    "gulp-test-debug": "node --debug-brk node_modules/.bin/gulp",
+    "test:unit": "mocha $(find test -type f \\( -iname 'test-*.js' ! -iname 'test-specs-browser.js' \\))",
+    "test:unit:coverage": "nyc npm run test:unit"
   },
   "author": {
     "name": "Jeremy Whitlock",
@@ -57,6 +59,7 @@
     "karma-mocha-reporter": "^2.0.0",
     "karma-phantomjs-launcher": "^1.0.0",
     "mocha": "^4.0.1",
+    "nyc": "^15.0.0",
     "phantomjs-prebuilt": "^2.1.6",
     "run-sequence": "^2.0.0",
     "supertest": "^3.0.0",
