@@ -1,0 +1,22 @@
+.nyc_output
+bin
+browser
+coverage
+docs
+examples
+lib
+# middleware
+node_modules
+samples
+schemas
+test
+gulpfile.js
+index.js
+middleware/swagger-ui
+middleware/swagger-ui.js
+middleware/swagger-validator.js
+middleware/swagger-security.js
+middleware/helpers.js
+middleware/swagger-router.js
+
+
