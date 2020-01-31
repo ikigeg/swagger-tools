@@ -1,4 +1,8 @@
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
 module.exports = {
+  mode: 'development',
+  devtool: 'inline-source-map',
   output: {
     filename: 'swagger-tools.js',
     path: __dirname + '/dist'
@@ -14,6 +18,9 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new CleanWebpackPlugin(),
+  ],
   node: {
     fs: 'empty',
   },
