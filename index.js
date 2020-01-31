@@ -108,7 +108,7 @@ var initializeMiddleware = function initializeMiddleware (rlOrSO, resources, cal
 
           return swaggerUi.apply(undefined, suArgs);
         },
-        swaggerValidator: require('./middleware/swagger-validator')
+        swaggerValidator: require('./src/middleware/swagger-validator')
       });
     } catch (err) {
       if (process.env.RUNNING_SWAGGER_TOOLS_TESTS === 'true') {
