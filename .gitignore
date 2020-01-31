@@ -11,3 +11,4 @@ test/*/browser
 .nyc_output
 browser/swagger-tools*.js
 dist
+.DS_Store
