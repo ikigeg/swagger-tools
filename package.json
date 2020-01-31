@@ -8,7 +8,8 @@
     "gulp-test-debug": "node --debug-brk node_modules/.bin/gulp",
     "test:unit": "mocha $(find test -type f \\( -iname 'test-*.js' ! -iname 'test-specs-browser.js' \\))",
     "test:unit:coverage": "nyc npm run test:unit",
-    "build": "webpack"
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production"
   },
   "author": {
     "name": "Jeremy Whitlock",
@@ -42,6 +43,9 @@
     "schemas"
   ],
   "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "babel-loader": "^8.0.6",
     "browserify": "^14.4.0",
     "connect": "^3.4.0",
     "del": "^3.0.0",
