@@ -10,3 +10,4 @@ test/*/browser
 .tern-project
 .nyc_output
 browser/swagger-tools*.js
+dist
