@@ -119,6 +119,26 @@ gulp.task('lint', function () {
     .pipe($.jshint.reporter('fail'));
 });
 
+gulp.task('eslint', function () {
+  return gulp
+    .src([
+      './bin/swagger-tools',
+      './index.js',
+      './lib/**/*.js',
+      './middleware/helpers.js',
+      './middleware/swagger-*.js',
+      './test/**/*.js',
+      './gulpfile.js',
+      '!./middleware/swagger-ui/**/*.js',
+      '!./test/**/test-specs-browser.js',
+      '!./test/browser/vendor/*.js',
+    ])
+    .pipe($.prettierPlugin())
+    .pipe($.eslint())
+    .pipe($.eslint.format())
+    .pipe($.eslint.failAfterError());
+});
+
 gulp.task('test-node', function () {
   return new Promise(function (resolve, reject) {
     gulp
@@ -241,4 +261,5 @@ gulp.task('test', function (cb) {
   runSequence('test-node', 'test-browser', cb);
 });
 
-gulp.task('default', ['lint', 'test']);
+// gulp.task('default', ['eslint', 'test']);
+gulp.task('default', ['eslint', 'test']);
