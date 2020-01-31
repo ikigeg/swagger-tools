@@ -74,7 +74,9 @@
     "supertest": "^3.0.0",
     "vinyl-browserify": "1.0.0",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   },
   "dependencies": {
     "async": "^2.5.0",
