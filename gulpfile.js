@@ -47,7 +47,7 @@ gulp.task('browserify', function () {
   function browserifyBuild(isStandalone, useDebug) {
     return function () {
       return new Promise(function (resolve, reject) {
-        var b = browserify('./lib/specs.js', {
+        var b = browserify('./src/lib/specs.js', {
           debug: useDebug,
           standalone: 'SwaggerTools.specs',
         });
@@ -105,7 +105,7 @@ gulp.task('lint', function () {
     .src([
       './bin/swagger-tools',
       './index.js',
-      './lib/**/*.js',
+      './src/lib/**/*.js',
       './middleware/helpers.js',
       './middleware/swagger-*.js',
       './test/**/*.js',
@@ -124,7 +124,7 @@ gulp.task('eslint', function () {
     .src([
       './bin/swagger-tools',
       './index.js',
-      './lib/**/*.js',
+      './src/lib/**/*.js',
       './middleware/helpers.js',
       './middleware/swagger-*.js',
       './test/**/*.js',
@@ -144,7 +144,7 @@ gulp.task('test-node', function () {
     gulp
       .src([
         './index.js',
-        './lib/**/*.js',
+        './src/lib/**/*.js',
         './middleware/helpers.js',
         './middleware/swagger-*.js',
         '!./middleware/swagger-ui/**/*.js',

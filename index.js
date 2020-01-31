@@ -26,7 +26,7 @@
 
 var _ = require('lodash');
 var debug = require('debug')('swagger-tools:middleware');
-var helpers = require('./lib/helpers');
+var helpers = require('./src/lib/helpers');
 
 var initializeMiddleware = function initializeMiddleware (rlOrSO, resources, callback) {
   var args;
@@ -134,5 +134,5 @@ var initializeMiddleware = function initializeMiddleware (rlOrSO, resources, cal
 
 module.exports = {
   initializeMiddleware: initializeMiddleware,
-  specs: require('./lib/specs')
+  specs: require('./src/lib/specs')
 };
