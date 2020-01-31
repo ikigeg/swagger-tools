@@ -26,7 +26,7 @@
 
 var _ = require('lodash');
 var debug = require('debug')('swagger-tools:middleware');
-var helpers = require('./src/lib/helpers');
+var helpers = require('./lib/helpers');
 
 var initializeMiddleware = function initializeMiddleware (rlOrSO, resources, callback) {
   var args;
@@ -85,15 +85,15 @@ var initializeMiddleware = function initializeMiddleware (rlOrSO, resources, cal
       callback({
         // Create a wrapper to avoid having to pass the non-optional arguments back to the swaggerMetadata middleware
         swaggerMetadata: function () {
-          var swaggerMetadata = require('./src/middleware/swagger-metadata');
+          var swaggerMetadata = require('./middleware/swagger-metadata');
 
           return swaggerMetadata.apply(undefined, args.slice(0, args.length - 1));
         },
-        swaggerRouter: require('./src/middleware/swagger-router'),
-        swaggerSecurity: require('./src/middleware/swagger-security'),
+        swaggerRouter: require('./middleware/swagger-router'),
+        swaggerSecurity: require('./middleware/swagger-security'),
         // Create a wrapper to avoid having to pass the non-optional arguments back to the swaggerUi middleware
         swaggerUi: function (options) {
-          var swaggerUi = require('./src/middleware/swagger-ui');
+          var swaggerUi = require('./middleware/swagger-ui');
           var suArgs = [rlOrSO];
 
           if (spec.version === '1.2') {
@@ -108,7 +108,7 @@ var initializeMiddleware = function initializeMiddleware (rlOrSO, resources, cal
 
           return swaggerUi.apply(undefined, suArgs);
         },
-        swaggerValidator: require('./src/middleware/swagger-validator')
+        swaggerValidator: require('./middleware/swagger-validator')
       });
     } catch (err) {
       if (process.env.RUNNING_SWAGGER_TOOLS_TESTS === 'true') {
@@ -134,5 +134,5 @@ var initializeMiddleware = function initializeMiddleware (rlOrSO, resources, cal
 
 module.exports = {
   initializeMiddleware: initializeMiddleware,
-  specs: require('./src/lib/specs')
+  specs: require('./lib/specs')
 };

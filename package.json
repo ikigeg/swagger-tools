@@ -2,7 +2,7 @@
   "name": "swagger-tools",
   "version": "0.10.3",
   "description": "Various tools for using and integrating with Swagger.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "gulp-test": "gulp",
     "gulp-test-debug": "node --debug-brk node_modules/.bin/gulp",
