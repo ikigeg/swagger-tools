@@ -25,7 +25,7 @@
 'use strict';
 
 var _ = require('lodash');
-var helpers = require('./helpers');
+var helpers = require('../../lib/helpers');
 
 // http://tools.ietf.org/html/rfc3339#section-5.6
 var dateRegExp = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/;

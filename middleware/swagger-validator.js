@@ -29,7 +29,7 @@ var async = require('async');
 var cHelpers = require('../lib/helpers');
 var debug = require('debug')('swagger-tools:middleware:validator');
 var mHelpers = require('./helpers');
-var validators = require('../lib/validators');
+var validators = require('../src/lib/validators');
 
 var sendData = function (swaggerVersion, res, data, encoding, skipped) {
   // 'res.end' requires a Buffer or String so if it's not one, create a String

@@ -28,7 +28,7 @@
 
 var _ = require('lodash');
 var helpers = require('../lib/helpers');
-var validators = require('../lib/validators');
+var validators = require('../src/lib/validators');
 var parseurl = require('parseurl');
 var qs = require('qs');
 
