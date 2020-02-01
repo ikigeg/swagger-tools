@@ -1,5 +1,3 @@
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-
 module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
@@ -23,9 +21,6 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-  ],
   node: {
     fs: 'empty',
   },
