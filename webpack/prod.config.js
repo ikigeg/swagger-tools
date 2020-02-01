@@ -11,17 +11,4 @@ module.exports = merge([common, {
     chunkFilename: '[name].bundle.min.js',
     path: path.resolve(path.join(__dirname, '..', 'dist'))
   },
-  // optimization: {
-  //   runtimeChunk: 'single',
-  //   splitChunks: {
-  //     cacheGroups: {
-  //     vendor: {
-  //         test: /[\\/]node_modules[\\/]/,
-  //         name: 'vendors',
-  //         enforce: true,
-  //         chunks: 'all'
-  //       }
-  //     }
-  //   }
-  // },
 }]);
