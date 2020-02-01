@@ -8,8 +8,9 @@
     "gulp-test-debug": "node --debug-brk node_modules/.bin/gulp",
     "test:unit": "mocha $(find test -type f \\( -iname 'test-*.js' ! -iname 'test-specs-browser.js' \\))",
     "test:unit:coverage": "nyc npm run test:unit",
-    "dev": "webpack --mode development",
-    "build": "webpack --mode production"
+    "clean:dist": "rimraf ./dist",
+    "dev": "npm run clean:dist && webpack --config webpack/dev.config.js --mode development",
+    "build": "npm run clean:dist && webpack --config webpack/dev.config.js --mode production"
   },
   "author": {
     "name": "Jeremy Whitlock",

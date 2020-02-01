@@ -1,5 +1,8 @@
 module.exports = {
   mode: 'development',
+  optimization: {
+    minimize: false
+  },
   devtool: 'inline-source-map',
   entry: {
     'swagger-tools': './src/index.js',
@@ -8,8 +11,22 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
+    chunkFilename: '[name].bundle.js',
     path: __dirname + '/dist'
   },
+  // optimization: {
+  //   runtimeChunk: 'single',
+  //   splitChunks: {
+  //     cacheGroups: {
+  //     vendor: {
+  //         test: /[\\/]node_modules[\\/]/,
+  //         name: 'vendors',
+  //         enforce: true,
+  //         chunks: 'all'
+  //       }
+  //     }
+  //   }
+  // },
   module: {
     rules: [
       {
