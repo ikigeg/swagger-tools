@@ -9,8 +9,10 @@
     "test:unit": "mocha $(find test -type f \\( -iname 'test-*.js' ! -iname 'test-specs-browser.js' \\))",
     "test:unit:coverage": "nyc npm run test:unit",
     "clean:dist": "rimraf ./dist",
-    "dev": "npm run clean:dist && webpack --config webpack/dev.config.js --mode development",
-    "build": "npm run clean:dist && webpack --config webpack/dev.config.js --mode production"
+    "build:test": "webpack --config webpack/test.config.js",
+    "build:dev": "webpack --config webpack/dev.config.js",
+    "build:prod": "NODE_ENV=production webpack --config webpack/prod.config.js",
+    "build": "npm run clean:dist && npm run build:test && npm run build:dev && npm run build:prod"
   },
   "author": {
     "name": "Jeremy Whitlock",
@@ -82,7 +84,8 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "webpack-merge": "^4.2.2"
   },
   "dependencies": {
     "async": "^2.5.0",
