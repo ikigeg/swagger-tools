@@ -5,4 +5,8 @@ module.exports = merge(common, {
   entry: {
     'swagger-tools': './src/index.js',
   },
+  output: {
+    library: 'SwaggerTools',
+    libraryTarget: 'umd',
+  },
 });

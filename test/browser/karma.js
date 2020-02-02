@@ -5,11 +5,12 @@ const fs = require('fs');
 const DIST = path.resolve(path.join(__dirname, '..', '..', 'dist'));
 const TEST_BROWSER_1_2 = 'test-browser-1_2.js';
 const TEST_BROWSER_2_0 = 'test-browser-2_0.js';
+const SWAGGER_TOOLS_STANDALONE = 'swagger-tools-standalone.js';
 
-const karmaTest = async (version, standalone) => {
+const karmaTest = async (standalone, version) => {
   const configFile = path.join(
     __dirname,
-    `test/browser/karma-${(standalone ? 'standalone' : 'bower')}-${version.replace('.', '_')}.conf.js`
+    `karma-${(standalone ? 'standalone' : 'bower')}-${version.replace('.', '_')}.conf.js`
   );
 
   await new Promise((resolve, reject) =>
@@ -41,12 +42,18 @@ const copyFile = (source, dest) => {
 async function runTests() {
   await copyFile(path.join(DIST, TEST_BROWSER_1_2), path.join(__dirname, TEST_BROWSER_1_2));
   await copyFile(path.join(DIST, TEST_BROWSER_2_0), path.join(__dirname, TEST_BROWSER_2_0));
+  await copyFile(path.join(DIST, SWAGGER_TOOLS_STANDALONE), path.join(__dirname, SWAGGER_TOOLS_STANDALONE));
   // copy them to this __dirname
-  // await karmaTest(true, '1.2');
-  // await karmaTest(true, '2.0');
+  await karmaTest(true, '1.2'); // karma-standalone-1_2.conf.js karma-standalone-1_2.conf.js
 }
 
-runTests();
+try {
+  runTests();
+} catch (err) {
+  console.log('Karma test failed', err);
+  process.exit(1);
+}
+
 
 // console.log(__dirname)
 // console.log('distFolder', distFolder);

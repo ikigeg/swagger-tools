@@ -12,6 +12,8 @@ module.exports = merge([
       filename: '[name].min.js',
       chunkFilename: '[name].bundle.min.js',
       path: path.resolve(path.join(__dirname, '..', 'dist')),
+      library: 'SwaggerTools',
+      libraryTarget: 'umd',
     },
   },
 ]);

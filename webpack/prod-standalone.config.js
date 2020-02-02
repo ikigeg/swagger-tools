@@ -12,6 +12,8 @@ module.exports = merge([
       filename: '[name]-standalone.min.js',
       chunkFilename: 'swagger-tools-standalone.vendors.min.js',
       path: path.resolve(path.join(__dirname, '..', 'dist')),
+      library: 'SwaggerTools',
+      libraryTarget: 'umd',
     },
     optimization: {
       splitChunks: {
