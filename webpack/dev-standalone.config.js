@@ -9,7 +9,7 @@ module.exports = merge(common, {
   output: {
     filename: '[name]-standalone.js',
     chunkFilename: 'swagger-tools-standalone.vendors.js',
-    path: path.resolve(path.join(__dirname, '..', 'dist'))
+    path: path.resolve(path.join(__dirname, '..', 'dist')),
   },
   optimization: {
     splitChunks: {
@@ -18,8 +18,8 @@ module.exports = merge(common, {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor',
           chunks: 'all',
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 });

@@ -19,7 +19,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     chunkFilename: '[name].bundle.js',
-    path: path.resolve(path.join(__dirname, '..', 'dist'))
+    path: path.resolve(path.join(__dirname, '..', 'dist')),
   },
   module: {
     rules: [
