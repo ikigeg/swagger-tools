@@ -12,7 +12,7 @@ module.exports = function (config) {
     frameworks: ['mocha'],
     files: [
       {pattern: 'swagger-tools-standalone.js', watch: false, included: true},
-      {pattern: 'test-browser.js', watch: false, included: true}
+      {pattern: 'test-browser-1_2.js', watch: false, included: true}
     ],
     client: {
       mocha: {

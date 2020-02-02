@@ -14,4 +14,4 @@ dist
 .DS_Store
 test/browser/swagger-tools-standalone.js
 test/browser/swagger-tools.js
-test/browser/test-browser.js
+test/browser/test-browser*.js
