@@ -9,7 +9,6 @@ module.exports = merge([
     },
     output: {
       filename: '[name]-standalone.min.js',
-      chunkFilename: 'swagger-tools-standalone.vendors.min.js',
     },
     optimization: {
       splitChunks: {

@@ -7,5 +7,8 @@ module.exports = merge([
     entry: {
       'swagger-tools': './src/index.js',
     },
+    output: {
+      chunkFilename: '[name].bundle.js',
+    }
   },
 ]);

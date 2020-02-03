@@ -7,11 +7,11 @@ module.exports = merge([
   {
     entry: {
       'test-browser-1_2': './test/1.2/test-specs.js',
-      'test-browser-2_0': './test/2.0/test-specs.js',
+      // 'test-browser-2_0': './test/2.0/test-specs.js',
     },
     output: {
-      library: 'SwaggerTools.spec',
-      libraryTarget: 'assign',
+      library: ['SwaggerTools', 'specs', 'v1_2'],
+      libraryTarget: 'umd',
     },
   },
 ]);

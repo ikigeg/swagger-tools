@@ -9,7 +9,8 @@ const config = merge([
     },
     output: {
       filename: '[name]-standalone.js',
-      chunkFilename: 'swagger-tools-standalone.vendors.js',
+      library: ['SwaggerTools', 'specs'],
+      libraryTarget: 'umd',
     },
     optimization: {
       splitChunks: {
@@ -25,6 +26,23 @@ const config = merge([
   },
 ]);
 
-console.log('----->', config);
+// console.log('----->', config);
 
 module.exports = config;
+
+/*
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+  else if(typeof exports === 'object') {
+    console.log('here');
+    exports["SwaggerTools"] = factory();
+  }
+	else {
+    (root.SwaggerTools || (root.SwaggerTools = {})).specs = factory()
+		root["SwaggerTools"] = factory();
+  }
+})(window, function() {
+*/
