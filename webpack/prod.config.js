@@ -1,4 +1,3 @@
-const path = require('path');
 const merge = require('webpack-merge');
 const common = require('./common.config');
 
@@ -11,9 +10,6 @@ module.exports = merge([
     output: {
       filename: '[name].min.js',
       chunkFilename: '[name].bundle.min.js',
-      path: path.resolve(path.join(__dirname, '..', 'dist')),
-      library: 'SwaggerTools',
-      libraryTarget: 'umd',
     },
   },
 ]);

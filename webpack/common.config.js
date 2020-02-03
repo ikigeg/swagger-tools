@@ -20,6 +20,8 @@ module.exports = {
     filename: '[name].js',
     chunkFilename: '[name].bundle.js',
     path: path.resolve(path.join(__dirname, '..', 'dist')),
+    library: 'SwaggerTools',
+    libraryTarget: 'umd',
   },
   module: {
     rules: [

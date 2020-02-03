@@ -246,10 +246,10 @@ gulp.task('test-browser', ['browserify'], async () => {
     await copyFile('./browser/swagger-tools.js', './test/browser/swagger-tools.js');
     await copyFile('./browser/swagger-tools-standalone.js', './test/browser/swagger-tools-standalone.js');
     await makeTest('1.2', false);
-    await makeTest('1.2', true);
-    await makeTest('2.0', false);
-    await makeTest('2.0', true);
-    await finisher();
+    // await makeTest('1.2', true);
+    // await makeTest('2.0', false);
+    // await makeTest('2.0', true);
+    // await finisher();
   } catch (err) {
     await finisher(err);
   }
