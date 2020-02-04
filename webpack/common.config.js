@@ -20,7 +20,7 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(path.join(__dirname, '..', 'dist')),
     library: 'SwaggerTools',
-    libraryTarget: 'umd',
+    // libraryTarget: 'umd',
   },
   module: {
     rules: [
@@ -34,6 +34,6 @@ module.exports = {
     ],
   },
   node: {
-    fs: 'empty',
+    // fs: 'empty',
   },
 };

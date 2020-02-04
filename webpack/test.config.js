@@ -10,8 +10,12 @@ module.exports = merge([
       // 'test-browser-2_0': './test/2.0/test-specs.js',
     },
     output: {
-      library: ['SwaggerTools', 'specs', 'v1_2'],
+      library: undefined,
       libraryTarget: 'umd',
     },
   },
 ]);
+// "var" | "assign" | "this" | "window"
+// | "self" | "global" | "commonjs" | "commonjs2"
+// | "commonjs-module" | "amd" | "amd-require"
+// | "umd" | "umd2" | "jsonp" | "system"

@@ -17,7 +17,7 @@ const karmaTest = async (standalone, version) => {
     new KarmaServer(
       {
         configFile,
-        singleRun: true,
+        singleRun: false,
       },
       err => {
         if (err) {
