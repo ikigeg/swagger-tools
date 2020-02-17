@@ -13,6 +13,7 @@ browser/swagger-tools*.js
 browser/test-browser*.js
 dist
 .DS_Store
+.cache/
 test/browser/swagger-tools-standalone.js
 test/browser/swagger-tools.js
 test/browser/test-browser*.js
