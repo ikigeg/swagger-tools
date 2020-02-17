@@ -2,7 +2,7 @@ const { Server: KarmaServer } = require('karma');
 const path = require('path');
 const fs = require('fs');
 
-const DIST = path.resolve(path.join(__dirname, '..', '..', 'dist'));
+const DIST = path.resolve(path.join(__dirname, '..', 'dist'));
 const TEST_BROWSER_1_2 = 'test-browser-1_2.js';
 const TEST_BROWSER_2_0 = 'test-browser-2_0.js';
 const SWAGGER_TOOLS_STANDALONE = 'swagger-tools-standalone.js';
