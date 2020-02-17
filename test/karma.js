@@ -14,7 +14,7 @@ const karmaTest = async ({ standalone, version }) => {
     new karma.Server(
       {
         configFile,
-        singleRun: true,
+        singleRun: false,
       },
       err => {
         if (err) {
@@ -26,8 +26,9 @@ const karmaTest = async ({ standalone, version }) => {
 };
 
 async function runTests() {
-  await karmaTest({ standalone: true, version: '1.2' });
-  await karmaTest({ standalone: true, version: '2.0' });
+  await karmaTest({ standalone: false, version: '1.2' });
+  // await karmaTest({ standalone: false, version: '1.2' });
+  // await karmaTest({ standalone: true, version: '2.0' });
 }
 
 try {

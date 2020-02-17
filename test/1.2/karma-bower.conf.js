@@ -20,8 +20,8 @@ module.exports = function (config) {
       { pattern: '../vendor/ZSchema-browser-min.js', watch: false, included: true },
       { pattern: '../vendor/path-loader-min.js', watch: false, included: true },
       { pattern: '../vendor/json-refs-min.js', watch: false, included: true },
-      { pattern: '../../browser/swagger-tools.js', watch: false, included: true },
-      { pattern: '../../browser/test-browser-1_2.js', watch: false, included: true }
+      { pattern: `../../${process.env.BUILD_DIR || 'browser'}/swagger-tools.js`, watch: false, included: true },
+      { pattern: `../../${process.env.BUILD_DIR || 'browser'}/test-browser-1_2.js`, watch: false, included: true }
     ],
     client: {
       mocha: {

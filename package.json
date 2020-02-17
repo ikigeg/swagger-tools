@@ -11,8 +11,8 @@
     "clean:browser": "rimraf browser/*.js",
     "clean:dist": "rimraf dist",
     "build:test": "webpack --config webpack/test.config.js",
-    "build:dev": "cross-env webpack --config webpack/dev.config.js",
-    "build:dev-standalone": "cross-env webpack --config webpack/dev-standalone.config.js",
+    "build:dev": "rimraf dist/swagger-tools.js && rimraf dist/vendor.bundle.js && cross-env webpack --config webpack/dev.config.js",
+    "build:dev-standalone": "rimraf dist/*standalone.js && cross-env webpack --config webpack/dev-standalone.config.js",
     "build:prod": "cross-env NODE_ENV=production webpack --config webpack/prod.config.js",
     "build:prod-standalone": "cross-env NODE_ENV=production webpack --config webpack/prod-standalone.config.js",
     "build": "run-s clean:dist build:test build:dev build:dev-standalone build:prod build:prod-standalone",
@@ -90,8 +90,8 @@
     "vinyl-browserify": "1.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
     "async": "^2.5.0",
