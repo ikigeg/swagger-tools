@@ -10,6 +10,7 @@ test/*/browser
 .tern-project
 .nyc_output
 browser/swagger-tools*.js
+browser/test-browser*.js
 dist
 .DS_Store
 test/browser/swagger-tools-standalone.js

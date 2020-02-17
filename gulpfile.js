@@ -95,6 +95,23 @@ gulp.task('browserify', async () => {
   await browserifyBuild(false, false);
 });
 
+gulp.task('browserify-tests', async () => {
+  const bundle = version => new Promise((resolve, reject) => {
+    const b = browserify([`./test/${version}/test-specs.js`], {
+      debug: true,
+    });
+
+    return b.bundle()
+      .pipe(source(`test-browser-${version.replace('.','_')}.js`))
+      .pipe(gulp.dest('browser/'))
+      .on('error', reject)
+      .on('end', resolve);
+  });
+
+  await bundle('1.2');
+  await bundle('2.0');
+});
+
 gulp.task('lint', function () {
   return gulp
     .src([
