@@ -33,7 +33,7 @@ const gulp = require('gulp');
 const runSequence = require('run-sequence');
 const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
-const { Server: KarmaServer } = require('karma');
+const karma = require('karma');
 
 const folders = {
   build: path.join(__dirname, 'browser'),
@@ -198,7 +198,7 @@ gulp.task('test-browser', ['browserify-swagger', 'browserify-tests'], async () =
 
   const karmaTest = configFile => {
     return new Promise((resolve, reject) =>
-      new KarmaServer(
+      new karma.Server(
         {
           configFile,
           singleRun: true,
