@@ -15,7 +15,7 @@
     "build:dev-standalone": "rimraf dist/*standalone.js && cross-env webpack --config webpack/dev-standalone.config.js",
     "build:prod": "cross-env NODE_ENV=production webpack --config webpack/prod.config.js",
     "build:prod-standalone": "cross-env NODE_ENV=production webpack --config webpack/prod-standalone.config.js",
-    "build": "run-s clean:dist build:test build:dev build:dev-standalone build:prod build:prod-standalone",
+    "build": "run-s clean:dist build:test build:dev-standalone build:prod-standalone",
     "jshint": "jshint --reporter=node_modules/jshint-stylish ./gulpfile.js ./test/**/*.js ./src/**/*.js ./bin/swagger-tools",
     "test:karma": "node ./test/karma"
   },
