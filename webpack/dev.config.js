@@ -9,6 +9,6 @@ module.exports = merge([
     },
     output: {
       chunkFilename: '[name].bundle.js',
-    }
+    },
   },
 ]);
