@@ -11,8 +11,8 @@ module.exports = function (config) {
     basePath: '.',
     frameworks: ['mocha'],
     files: [
-      {pattern: 'swagger-tools-standalone.js', watch: false, included: true},
-      {pattern: 'test-browser-1_2.js', watch: false, included: true}
+      { pattern: '../../browser/swagger-tools-standalone.js', watch: false, included: true },
+      { pattern: '../../browser/test-browser-1_2.js', watch: false, included: true }
     ],
     client: {
       mocha: {

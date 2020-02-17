@@ -24,17 +24,22 @@
 
 'use strict';
 
+const path = require('path');
+const del = require('del');
 const $ = require('gulp-load-plugins')();
 const browserify = require('browserify');
-const buffer = require('vinyl-buffer');
-const del = require('del');
 const exposify = require('exposify');
-const fs = require('fs');
 const gulp = require('gulp');
-const { Server: KarmaServer } = require('karma');
-const path = require('path');
 const runSequence = require('run-sequence');
+const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
+const { Server: KarmaServer } = require('karma');
+
+const folders = {
+  build: path.join(__dirname, 'browser'),
+  test: path.join(__dirname, 'test'),
+  vendor: path.join(__dirname, 'test', 'vendor'),
+};
 
 let runningAllTests = false;
 
@@ -44,9 +49,9 @@ function displayCoverageReport(display) {
   }
 }
 
-gulp.task('browserify', async () => {
-  function browserifyBuild(isStandalone, useDebug) {
-    return new Promise(function (resolve, reject) {
+gulp.task('browserify-swagger', async () => {
+  const bundle = ({ isStandalone, useDebug }) =>
+    new Promise((resolve, reject) => {
       const b = browserify('./src/lib/specs.js', {
         debug: useDebug,
         standalone: 'SwaggerTools.specs',
@@ -84,29 +89,29 @@ gulp.task('browserify', async () => {
         .on('error', reject)
         .on('end', resolve);
     });
-  }
+  
+  await del(['./browser/swagger-tools*.js']);
 
-  await browserifyBuild(true, true);
-  // Standalone build minified and without source maps
-  await browserifyBuild(true, false);
-  // Bower build with source maps and complete source
-  await browserifyBuild(false, true);
-  // Bower build minified and without source maps
-  await browserifyBuild(false, false);
+  await bundle({ isStandalone: true, useDebug: true });
+  await bundle({ isStandalone: true, useDebug: false });
+  await bundle({ isStandalone: false, useDebug: true });
+  await bundle({ isStandalone: false, useDebug: false });
 });
 
 gulp.task('browserify-tests', async () => {
   const bundle = version => new Promise((resolve, reject) => {
-    const b = browserify([`./test/${version}/test-specs.js`], {
+    const b = browserify([path.join(folders.test, version, 'test-specs.js')], {
       debug: true,
     });
 
     return b.bundle()
-      .pipe(source(`test-browser-${version.replace('.','_')}.js`))
-      .pipe(gulp.dest('browser/'))
+      .pipe(source(`test-browser-${version.replace('.', '_')}.js`))
+      .pipe(gulp.dest(folders.build))
       .on('error', reject)
       .on('end', resolve);
   });
+
+  await del([path.join(folders.build, 'test*.js')]);
 
   await bundle('1.2');
   await bundle('2.0');
@@ -180,51 +185,15 @@ gulp.task('test-node', function () {
   });
 });
 
-gulp.task('build-1_2', ['browserify'], async () => {
-  console.log('in build-1_2');
-});
-
-gulp.task('test-browser', ['browserify'], async () => {
-  const cleanUpEach = () => del(['./test/browser/test-browser.js']);
-
-  const cleanUpAll = async () => {
-    await cleanUpEach();
-    return del([
-      './test/browser/swagger-tools.js',
-      './test/browser/swagger-tools-standalone.js',
-    ]);
-  };
-
+gulp.task('test-browser', ['browserify-swagger', 'browserify-tests'], async () => {
   const finisher = async err => {
-    await cleanUpAll();
+    await del([path.join(folders.build, 'test*.js')]);
+
     displayCoverageReport(runningAllTests);
     if (err) {
       console.log('Finisher error:', err);
     }
     return err;
-  };
-
-  const bundle = version => new Promise((resolve, reject) => {
-    const b = browserify([`./test/${version}/test-specs.js`], {
-      debug: true,
-    });
-
-    return b.bundle()
-      .pipe(source('test-browser.js'))
-      .pipe(gulp.dest('./test/browser'))
-      .on('error', reject)
-      .on('end', resolve);
-  });
-
-  const copyFile = (source, dest) => {
-    return new Promise((resolve, reject) => {
-      return fs.copyFile(source, dest, (err) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve();
-      });
-    });
   };
 
   const karmaTest = configFile => {
@@ -243,27 +212,18 @@ gulp.task('test-browser', ['browserify'], async () => {
       ).start());
   };
 
-  const makeTest = async (version, standalone) => {
-    await cleanUpEach();
-    await bundle(version);
-
+  const runTest = async ({ version, standalone }) => {
     const configFile = path.join(
-      __dirname,
-      'test/browser/karma-' +
-      (standalone ? 'standalone' : 'bower') +
-      '.conf.js'
+      folders.test, version, `karma-${standalone ? 'standalone' : 'bower'}.conf.js`
     );
     return karmaTest(configFile);
   };
   
   try {
-    await cleanUpAll();
-    await copyFile('./browser/swagger-tools.js', './test/browser/swagger-tools.js');
-    await copyFile('./browser/swagger-tools-standalone.js', './test/browser/swagger-tools-standalone.js');
-    await makeTest('1.2', false);
-    // await makeTest('1.2', true);
-    // await makeTest('2.0', false);
-    // await makeTest('2.0', true);
+    await runTest({ version: '1.2', standalone: false });
+    // await runTest({ version: '1.2', standalone: true });
+    // await runTest({ version: '2.0', standalone: false });
+    // await runTest({ version: '2.0', standalone: true });
     // await finisher();
   } catch (err) {
     await finisher(err);

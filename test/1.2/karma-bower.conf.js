@@ -11,18 +11,17 @@ module.exports = function (config) {
     basePath: '.',
     frameworks: ['mocha'],
     files: [
-      {pattern: 'vendor/async.min.js', watch: false, included: true},
-      // {pattern: 'vendor/debug.js', watch: false, included: true},
-      {pattern: 'vendor/js-yaml.min.js', watch: false, included: true},
-      {pattern: 'vendor/lodash.min.js', watch: false, included: true},
-      {pattern: 'vendor/spark-md5.min.js', watch: false, included: true},
-      {pattern: 'vendor/swagger-converter.min.js', watch: false, included: true},
-      {pattern: 'vendor/traverse.js', watch: false, included: true},
-      {pattern: 'vendor/ZSchema-browser-min.js', watch: false, included: true},
-      {pattern: 'vendor/path-loader-min.js', watch: false, included: true},
-      {pattern: 'vendor/json-refs-min.js', watch: false, included: true},
-      {pattern: 'swagger-tools.js', watch: false, included: true},
-      {pattern: 'test-browser-1_2.js', watch: false, included: true}
+      { pattern: '../vendor/async.min.js', watch: false, included: true },
+      { pattern: '../vendor/js-yaml.min.js', watch: false, included: true },
+      { pattern: '../vendor/lodash.min.js', watch: false, included: true },
+      { pattern: '../vendor/spark-md5.min.js', watch: false, included: true },
+      { pattern: '../vendor/swagger-converter.min.js', watch: false, included: true },
+      { pattern: '../vendor/traverse.js', watch: false, included: true },
+      { pattern: '../vendor/ZSchema-browser-min.js', watch: false, included: true },
+      { pattern: '../vendor/path-loader-min.js', watch: false, included: true },
+      { pattern: '../vendor/json-refs-min.js', watch: false, included: true },
+      { pattern: '../../browser/swagger-tools.js', watch: false, included: true },
+      { pattern: '../../browser/test-browser-1_2.js', watch: false, included: true }
     ],
     client: {
       mocha: {
