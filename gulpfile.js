@@ -221,9 +221,9 @@ gulp.task('test-browser', ['browserify-swagger', 'browserify-tests'], async () =
   
   try {
     await runTest({ version: '1.2', standalone: false });
-    // await runTest({ version: '1.2', standalone: true });
-    // await runTest({ version: '2.0', standalone: false });
-    // await runTest({ version: '2.0', standalone: true });
+    await runTest({ version: '1.2', standalone: true });
+    await runTest({ version: '2.0', standalone: false });
+    await runTest({ version: '2.0', standalone: true });
     // await finisher();
   } catch (err) {
     await finisher(err);
