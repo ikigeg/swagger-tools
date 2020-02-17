@@ -44,61 +44,55 @@ function displayCoverageReport(display) {
   }
 }
 
-gulp.task('browserify', function () {
+gulp.task('browserify', async () => {
   function browserifyBuild(isStandalone, useDebug) {
-    return function () {
-      return new Promise(function (resolve, reject) {
-        var b = browserify('./src/lib/specs.js', {
-          debug: useDebug,
-          standalone: 'SwaggerTools.specs',
-        });
-
-        if (!isStandalone) {
-          // Expose Bower modules so they can be required
-          exposify.config = {
-            async: 'async',
-            debug: 'debug',
-            'json-refs': 'JsonRefs',
-            'js-yaml': 'jsyaml',
-            lodash: '_',
-            'spark-md5': 'SparkMD5',
-            'swagger-converter': 'SwaggerConverter.convert',
-            traverse: 'traverse',
-            'z-schema': 'ZSchema',
-          };
-
-          b.transform('exposify');
-        }
-
-        b.bundle()
-          .pipe(
-            source(
-              'swagger-tools' +
-              (isStandalone ? '-standalone' : '') +
-              (!useDebug ? '-min' : '') +
-              '.js'
-            )
-          )
-          .pipe($.if(!useDebug, buffer()))
-          .pipe($.if(!useDebug, $.uglify()))
-          .pipe(gulp.dest('browser/'))
-          .on('error', reject)
-          .on('end', resolve);
+    return new Promise(function (resolve, reject) {
+      const b = browserify('./src/lib/specs.js', {
+        debug: useDebug,
+        standalone: 'SwaggerTools.specs',
       });
-    };
+
+      if (!isStandalone) {
+        // Expose Bower modules so they can be required
+        exposify.config = {
+          async: 'async',
+          debug: 'debug',
+          'json-refs': 'JsonRefs',
+          'js-yaml': 'jsyaml',
+          lodash: '_',
+          'spark-md5': 'SparkMD5',
+          'swagger-converter': 'SwaggerConverter.convert',
+          traverse: 'traverse',
+          'z-schema': 'ZSchema',
+        };
+
+        b.transform('exposify');
+      }
+
+      b.bundle()
+        .pipe(
+          source(
+            'swagger-tools' +
+            (isStandalone ? '-standalone' : '') +
+            (!useDebug ? '-min' : '') +
+            '.js'
+          )
+        )
+        .pipe($.if(!useDebug, buffer()))
+        .pipe($.if(!useDebug, $.uglify()))
+        .pipe(gulp.dest('browser/'))
+        .on('error', reject)
+        .on('end', resolve);
+    });
   }
 
-  return (
-    Promise.resolve()
-      // Standalone build with source maps and complete source
-      .then(browserifyBuild(true, true))
-      // Standalone build minified and without source maps
-      .then(browserifyBuild(true, false))
-      // Bower build with source maps and complete source
-      .then(browserifyBuild(false, true))
-      // Bower build minified and without source maps
-      .then(browserifyBuild(false, false))
-  );
+  await browserifyBuild(true, true);
+  // Standalone build minified and without source maps
+  await browserifyBuild(true, false);
+  // Bower build with source maps and complete source
+  await browserifyBuild(false, true);
+  // Bower build minified and without source maps
+  await browserifyBuild(false, false);
 });
 
 gulp.task('lint', function () {
@@ -167,6 +161,10 @@ gulp.task('test-node', function () {
           });
       });
   });
+});
+
+gulp.task('build-1_2', ['browserify'], async () => {
+  console.log('in build-1_2');
 });
 
 gulp.task('test-browser', ['browserify'], async () => {
