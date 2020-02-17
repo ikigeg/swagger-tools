@@ -8,7 +8,7 @@
     "gulp-test-debug": "node --debug-brk node_modules/.bin/gulp",
     "test:unit": "mocha $(find test -type f \\( -iname 'test-*.js' ! -iname 'test-specs-browser.js' \\))",
     "test:unit:coverage": "nyc npm run test:unit",
-    "clean:dist": "rimraf ./dist",
+    "clean:dist": "rimraf build",
     "build:test": "webpack --config webpack/test.config.js",
     "build:dev": "webpack --config webpack/dev.config.js",
     "build:dev-standalone": "webpack --config webpack/dev-standalone.config.js",
