@@ -1,4 +1,3 @@
-// const path = require('path');
 const merge = require('webpack-merge');
 const common = require('./common.config');
 
@@ -15,7 +14,3 @@ module.exports = merge([
     },
   },
 ]);
-// "var" | "assign" | "this" | "window"
-// | "self" | "global" | "commonjs" | "commonjs2"
-// | "commonjs-module" | "amd" | "amd-require"
-// | "umd" | "umd2" | "jsonp" | "system"
