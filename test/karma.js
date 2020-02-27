@@ -29,16 +29,12 @@ const karmaTest = async ({ standalone, version }) => {
 async function runTests() {
   // Test our development version
   await karmaTest({ standalone: true, version: '1.2' });
-  // await karmaTest({ standalone: false, version: '1.2' });
   await karmaTest({ standalone: true, version: '2.0' });
-  // await karmaTest({ standalone: false, version: '2.0' });
 
   // Test our production minified version
   process.env.MINIFIED = 'true';
   await karmaTest({ standalone: true, version: '1.2' });
-  // await karmaTest({ standalone: false, version: '1.2' });
   await karmaTest({ standalone: true, version: '2.0' });
-  // await karmaTest({ standalone: false, version: '2.0' });
 }
 
 try {

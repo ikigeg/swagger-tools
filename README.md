@@ -134,7 +134,7 @@ This is a more of a personal choice, but I find integration of eslint with VSCod
 
 ## Replacing Browserify
 
-Webpack is where it is at.
+Webpack is where it is at. Struggling to make a non-standalone version of it with webpack though... maybe not the end of the world... TODO.
 
 ## Using the very latest in JavaScript features
 
