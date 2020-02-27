@@ -42,5 +42,7 @@ module.exports = {
   node: {
     fs: 'empty',
   },
-  plugins: [new BundleAnalyzerPlugin()],
+  plugins: [
+    new BundleAnalyzerPlugin({ openAnalyzer: false, analyzerMode: 'static' }),
+  ],
 };

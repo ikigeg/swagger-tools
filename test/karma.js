@@ -15,7 +15,7 @@ const karmaTest = async ({ version }) => {
     new karma.Server(
       {
         configFile,
-        singleRun: true,
+        singleRun: true, // Set as false to debug in browser
       },
       err => {
         if (err) {
