@@ -46,12 +46,10 @@ const padRight = (s, len, ch = ' ') => {
 };
 
 const exitWithError = msg => {
-  console.error();
-  console.error(`  error: ${msg}`);
-  console.error(); // Here only to match the output of commander.js
-
+  console.error(`\n  error: ${msg}\n`); // Here only to match the output of commander.js
   process.exit(1);
 };
+
 const getDocument = (pathOrUrl, callback) => {
   const parseContent = content => {
     let err;
