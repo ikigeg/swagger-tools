@@ -156,9 +156,8 @@ program
 
       if (err) {
         if (err.failedValidation) {
-          console.error();
           console.error(
-            `${err.message} (Run with --no-validation to skip validation)`,
+            `\n${err.message} (Run with --no-validation to skip validation)`,
           );
 
           results = {
@@ -180,13 +179,13 @@ program
           return exitWithError(err.message);
         }
       }
-      console.log();
-      console.log(
-        this.yaml
-          ? YAML.safeDump(converted, { indent: 2 })
-          : JSON.stringify(converted, null, 2),
+      return console.log(
+        `\n${
+          this.yaml
+            ? YAML.safeDump(converted, { indent: 2 })
+            : JSON.stringify(converted, null, 2)
+        }\n`,
       );
-      return console.log();
     }.bind(this);
 
     getDocuments(
@@ -248,17 +247,14 @@ program
       return handleUnsupportedVersion(version);
     }
 
-    console.log();
-    console.log(`Swagger ${version} Information:`);
-    console.log();
-
-    console.log(
-      `  ${padRight('documentation url', paddingAmount)}${spec.docsUrl}`,
+    return console.log(
+      `\nSwagger ${version} Information:\n\n  ${padRight(
+        'documentation url',
+        paddingAmount,
+      )}${spec.docsUrl}\n  ${padRight('schema(s) url', paddingAmount)}${
+        spec.schemasUrl
+      }\n`,
     );
-    console.log(
-      `  ${padRight('schema(s) url', paddingAmount)}${spec.schemasUrl}`,
-    );
-    return console.log();
   });
 
 // We have to use command+usage because commander.js does not handle the following properly:
