@@ -197,7 +197,7 @@ const getOrComposeSchema = (documentMetadata, modelId) => {
     // Remove the subTypes property
     delete composed.subTypes;
 
-    _.each(composed.properties, function(property, name) {
+    _.each(composed.properties, (property, name) => {
       const oProp = original.properties[name];
 
       // Convert the string values to numerical values
@@ -212,7 +212,7 @@ const getOrComposeSchema = (documentMetadata, modelId) => {
           includeInvalid: true,
           refPreProcessor: swagger1RefPreProcesor,
         }),
-        function(refDetails, refPtr) {
+        (refDetails, refPtr) => {
           const dMetadata = documentMetadata.definitions[refDetails.uri];
           const path = JsonRefs.pathFromPtr(refPtr);
 
@@ -266,7 +266,7 @@ const getDocumentCache = function(apiDOrSO) {
   const key = SparkMD5.hash(JSON.stringify(apiDOrSO));
   let cacheEntry =
     documentCache[key] ||
-    _.find(documentCache, function(cacheEntry) {
+    _.find(documentCache, cacheEntry => {
       return cacheEntry.resolvedId === key;
     });
 
@@ -282,7 +282,7 @@ const getDocumentCache = function(apiDOrSO) {
   return cacheEntry;
 };
 
-const handleValidationError = function(results, callback) {
+const handleValidationError = (results, callback) => {
   const err = new Error('The Swagger document(s) are invalid');
 
   err.errors = results.errors;
@@ -296,13 +296,13 @@ const handleValidationError = function(results, callback) {
   callback(err);
 };
 
-const normalizePath = function(path) {
+const normalizePath = path => {
   const matches = path.match(/\{(.*?)\}/g);
   const argNames = [];
   let normPath = path;
 
   if (matches) {
-    _.each(matches, function(match, index) {
+    _.each(matches, (match, index) => {
       normPath = normPath.replace(match, `{${index}}`);
       argNames.push(match.replace(/[{}]/g, ''));
     });
@@ -314,7 +314,7 @@ const normalizePath = function(path) {
   };
 };
 
-const removeCirculars = function(obj) {
+const removeCirculars = obj => {
   function walk(ancestors, node, path) {
     function walkItem(item, segment) {
       path.push(segment);
@@ -327,11 +327,11 @@ const removeCirculars = function(obj) {
       ancestors.push(node);
 
       if (_.isArray(node)) {
-        _.each(node, function(member, index) {
+        _.each(node, (member, index) => {
           walkItem(member, index.toString());
         });
       } else if (_.isPlainObject(node)) {
-        _.forOwn(node, function(member, key) {
+        _.forOwn(node, (member, key) => {
           walkItem(member, key.toString());
         });
       }
@@ -345,7 +345,7 @@ const removeCirculars = function(obj) {
   walk([], obj, []);
 };
 
-const validateNoExist = function(data, val, codeSuffix, msgPrefix, path, dest) {
+const validateNoExist = (data, val, codeSuffix, msgPrefix, path, dest) => {
   if (!_.isUndefined(data) && data.indexOf(val) > -1) {
     createErrorOrWarning(
       `DUPLICATE_${codeSuffix}`,
@@ -401,18 +401,21 @@ const processDocument = function(documentMetadata, results) {
 
     return metadata;
   };
-  const getDisplayId = function(id) {
+
+  const getDisplayId = id => {
     return swaggerVersion === '1.2' ? JsonRefs.pathFromPtr(id).pop() : id;
   };
+
   const jsonRefsOptions = {
     filter: 'local',
     includeInvalid: true,
   };
-  var walk = function(root, id, lineage) {
+
+  const walk = (root, id, lineage) => {
     const definition = documentMetadata.definitions[id || root];
 
     if (definition) {
-      _.each(definition.parents, function(parent) {
+      _.each(definition.parents, parent => {
         lineage.push(parent);
 
         if (root !== parent) {
@@ -421,6 +424,7 @@ const processDocument = function(documentMetadata, results) {
       });
     }
   };
+
   const authDefsProp =
     swaggerVersion === '1.2' ? 'authorizations' : 'securityDefinitions';
   const modelDefsProp = swaggerVersion === '1.2' ? 'models' : 'definitions';
@@ -475,7 +479,7 @@ const processDocument = function(documentMetadata, results) {
   });
 
   // Process model definitions
-  _.each(documentMetadata.resolved[modelDefsProp], function(model, modelId) {
+  _.each(documentMetadata.resolved[modelDefsProp], (model, modelId) => {
     const modelDefPath = [modelDefsProp, modelId];
     const modelMetadata = getDefinitionMetadata(modelDefPath);
 
@@ -494,7 +498,7 @@ const processDocument = function(documentMetadata, results) {
       // Handle inheritance references
       switch (swaggerVersion) {
         case '1.2':
-          _.each(model.subTypes, function(subType, index) {
+          _.each(model.subTypes, (subType, index) => {
             const subPath = ['models', subType];
             const subPtr = JsonRefs.pathToPtr(subPath);
             let subMetadata = documentMetadata.definitions[subPtr];
@@ -519,7 +523,7 @@ const processDocument = function(documentMetadata, results) {
         default:
           _.each(
             documentMetadata.original[modelDefsProp][modelId].allOf,
-            function(schema, index) {
+            (schema, index) => {
               let isInline = false;
               let parentPath;
 
@@ -675,7 +679,7 @@ const processDocument = function(documentMetadata, results) {
     });
 
     // Identify missing required properties
-    _.each(definition.required || [], function(name, index) {
+    _.each(definition.required || [], (name, index) => {
       const type = swaggerVersion === '1.2' ? 'Model' : 'Definition';
 
       if (
@@ -699,13 +703,13 @@ const processDocument = function(documentMetadata, results) {
   // Process local references
   _.each(
     JsonRefs.findRefs(documentMetadata.original, jsonRefsOptions),
-    function(refDetails, refPtr) {
+    (refDetails, refPtr) => {
       addReference(documentMetadata, refDetails.uri, refPtr, results);
     },
   );
 
   // Process invalid references
-  _.each(documentMetadata.referencesMetadata, function(refDetails, refPtr) {
+  _.each(documentMetadata.referencesMetadata, (refDetails, refPtr) => {
     if (isRemotePtr(refDetails) && refDetails.missing === true) {
       results.errors.push({
         code: 'UNRESOLVABLE_REFERENCE',
@@ -719,7 +723,7 @@ const processDocument = function(documentMetadata, results) {
   });
 };
 
-const validateExist = function(data, val, codeSuffix, msgPrefix, path, dest) {
+const validateExist = (data, val, codeSuffix, msgPrefix, path, dest) => {
   if (!_.isUndefined(data) && data.indexOf(val) === -1) {
     createErrorOrWarning(
       `UNRESOLVABLE_${codeSuffix}`,
@@ -778,8 +782,8 @@ const processAuthRefs = function(documentMetadata, authRefs, path, results) {
   } else {
     _.reduce(
       authRefs,
-      function(seenNames, scopes, index) {
-        _.each(scopes, function(scopes, name) {
+      (seenNames, scopes, index) => {
+        _.each(scopes, (scopes, name) => {
           const authPtr = ['securityDefinitions', name];
           const authRefPath = path.concat(index.toString(), name);
 
@@ -797,7 +801,7 @@ const processAuthRefs = function(documentMetadata, authRefs, path, results) {
 
           // Add reference or record unresolved authorization
           if (addReference(documentMetadata, authPtr, authRefPath, results)) {
-            _.each(scopes, function(scope, index) {
+            _.each(scopes, (scope, index) => {
               // Add reference or record unresolved authorization scope
               const sPtr = authPtr.concat(['scopes', scope]);
               addReference(
@@ -841,7 +845,7 @@ const resolveRefs = function(apiDOrSO, callback) {
         removeCirculars(results.resolved);
 
         // Fix circular references
-        _.each(results.refs, function(refDetails, refPtr) {
+        _.each(results.refs, (refDetails, refPtr) => {
           if (refDetails.circular) {
             _.set(results.resolved, JsonRefs.pathFromPtr(refPtr), {});
           }
@@ -882,7 +886,7 @@ const validateAgainstSchema = function(spec, schemaOrName, data, callback) {
 
 const validateDefinitions = function(documentMetadata, results) {
   // Validate unused definitions
-  _.each(documentMetadata.definitions, function(metadata, id) {
+  _.each(documentMetadata.definitions, (metadata, id) => {
     let defPath = JsonRefs.pathFromPtr(id);
     const defType = defPath[0].substring(0, defPath[0].length - 1);
     const displayId =
@@ -1024,7 +1028,7 @@ const validateParameters = function(
 
   // Validate missing path parameters (in path but not in operation.parameters)
   if (_.isUndefined(skipMissing) || skipMissing === false) {
-    _.each(_.difference(nPath.args, pathParams), function(unused) {
+    _.each(_.difference(nPath.args, pathParams), unused => {
       createErrorOrWarning(
         'MISSING_API_PATH_PARAMETER',
         `API requires path parameter but it is not defined: ${unused}`,
@@ -1249,7 +1253,7 @@ const validateSwagger1_2 = function(
   validateDefinitions(rlDocumentMetadata, results);
 
   // Identify unused resource paths defined in the Resource Listing
-  _.each(_.difference(rlResourcePaths, adResourcePaths), function(unused) {
+  _.each(_.difference(rlResourcePaths, adResourcePaths), unused => {
     const index = rlResourcePaths.indexOf(unused);
 
     createUnusedErrorOrWarning(
@@ -1311,7 +1315,7 @@ const validateSwagger2_0 = function(spec, swaggerObject, callback) {
       );
 
       // Validate the Operations
-      _.each(path, function(operation, method) {
+      _.each(path, (operation, method) => {
         const cParams = [];
         const oPath = pPath.concat(method);
         const seenParams = [];
@@ -1329,7 +1333,7 @@ const validateSwagger2_0 = function(spec, swaggerObject, callback) {
         );
 
         // Compose parameters from path global parameters and operation parameters
-        _.each(operation.parameters, function(parameter) {
+        _.each(operation.parameters, parameter => {
           // Can happen with invalid references
           if (_.isUndefined(parameter)) {
             return;
@@ -1340,7 +1344,7 @@ const validateSwagger2_0 = function(spec, swaggerObject, callback) {
           seenParams.push(`${parameter.name}:${parameter.in}`);
         });
 
-        _.each(path.parameters, function(parameter) {
+        _.each(path.parameters, parameter => {
           const cloned = _.cloneDeep(parameter);
 
           // The only errors that can occur here are schema constraint validation errors which are already reported above
@@ -1363,7 +1367,7 @@ const validateSwagger2_0 = function(spec, swaggerObject, callback) {
         );
 
         // Validate responses
-        _.each(operation.responses, function(response, responseCode) {
+        _.each(operation.responses, (response, responseCode) => {
           // Do not process references to missing responses
           if (!_.isUndefined(response)) {
             // Validate validate inline constraints
@@ -1432,7 +1436,7 @@ const validateStructurally = function(spec, rlOrSO, apiDeclarations, callback) {
               return callback(err);
             }
 
-            _.each(allResults, function(result, index) {
+            _.each(allResults, (result, index) => {
               results.apiDeclarations[index] = result;
             });
 
