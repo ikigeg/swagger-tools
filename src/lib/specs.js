@@ -197,7 +197,8 @@ const getOrComposeSchema = (documentMetadata, modelId) => {
     // Remove the subTypes property
     delete composed.subTypes;
 
-    _.each(composed.properties, (property, name) => {
+    _.each(composed.properties, (origProperty, name) => {
+      const property = origProperty;
       const oProp = original.properties[name];
 
       // Convert the string values to numerical values
@@ -430,10 +431,7 @@ const processDocument = function(documentMetadata, results) {
   const modelDefsProp = swaggerVersion === '1.2' ? 'models' : 'definitions';
 
   // Process authorization definitions
-  _.each(documentMetadata.resolved[authDefsProp], function(
-    authorization,
-    name,
-  ) {
+  _.each(documentMetadata.resolved[authDefsProp], (authorization, name) => {
     const securityDefPath = [authDefsProp, name];
 
     // Swagger 1.2 only has authorization definitions in the Resource Listing
@@ -446,7 +444,7 @@ const processDocument = function(documentMetadata, results) {
 
     _.reduce(
       authorization.scopes,
-      function(seenScopes, scope, indexOrName) {
+      (seenScopes, scope, indexOrName) => {
         const scopeName = swaggerVersion === '1.2' ? scope.scope : indexOrName;
         const scopeDefPath = securityDefPath.concat([
           'scopes',
@@ -580,14 +578,14 @@ const processDocument = function(documentMetadata, results) {
   }
 
   // Validate definition/models (Inheritance, property definitions, ...)
-  _.each(documentMetadata.definitions, function(metadata, id) {
+  _.each(documentMetadata.definitions, (origMetadata, id) => {
+    const metadata = origMetadata;
+
     const defPath = JsonRefs.pathFromPtr(id);
     const definition = traverse(documentMetadata.original).get(defPath);
     const defProp = defPath[0];
     const code = defProp.substring(0, defProp.length - 1).toUpperCase();
     const msgPrefix = code.charAt(0) + code.substring(1).toLowerCase();
-    let dProperties;
-    let iProperties;
     let lineage;
 
     // The only checks we perform below are inheritance checks so skip all non-model definitions
@@ -595,8 +593,8 @@ const processDocument = function(documentMetadata, results) {
       return;
     }
 
-    dProperties = [];
-    iProperties = [];
+    const dProperties = [];
+    const iProperties = [];
     lineage = metadata.lineage;
 
     // Do not reprocess lineage if already processed
@@ -642,12 +640,12 @@ const processDocument = function(documentMetadata, results) {
     }
 
     // Remove self reference from the end of the lineage (Front too if cyclical)
-    _.each(lineage.slice(metadata.cyclical ? 1 : 0), function(id) {
+    _.each(lineage.slice(metadata.cyclical ? 1 : 0), id => {
       const pModel = traverse(documentMetadata.resolved).get(
         JsonRefs.pathFromPtr(id),
       );
 
-      _.each(Object.keys(pModel.properties || {}), function(name) {
+      _.each(Object.keys(pModel.properties || {}), name => {
         if (iProperties.indexOf(name) === -1) {
           iProperties.push(name);
         }
@@ -658,7 +656,7 @@ const processDocument = function(documentMetadata, results) {
     validateSchemaConstraints(documentMetadata, definition, defPath, results);
 
     // Identify redeclared properties
-    _.each(definition.properties, function(property, name) {
+    _.each(definition.properties, (property, name) => {
       const pPath = defPath.concat(['properties', name]);
 
       // Do not process unresolved properties
@@ -734,7 +732,7 @@ const validateExist = (data, val, codeSuffix, msgPrefix, path, dest) => {
   }
 };
 
-const processAuthRefs = function(documentMetadata, authRefs, path, results) {
+const processAuthRefs = (documentMetadata, authRefs, path, results) => {
   const code =
     documentMetadata.swaggerVersion === '1.2'
       ? 'AUTHORIZATION'
@@ -745,7 +743,7 @@ const processAuthRefs = function(documentMetadata, authRefs, path, results) {
   if (documentMetadata.swaggerVersion === '1.2') {
     _.reduce(
       authRefs,
-      function(seenNames, scopes, name) {
+      (seenNames, scopes, name) => {
         const authPtr = ['authorizations', name];
         const aPath = path.concat([name]);
 
@@ -753,7 +751,7 @@ const processAuthRefs = function(documentMetadata, authRefs, path, results) {
         if (addReference(documentMetadata, authPtr, aPath, results)) {
           _.reduce(
             scopes,
-            function(seenScopes, scope, index) {
+            (seenScopes, scope, index) => {
               const sPath = aPath.concat(index.toString(), 'scope');
               const sPtr = authPtr.concat(['scopes', scope.scope]);
 
@@ -782,8 +780,8 @@ const processAuthRefs = function(documentMetadata, authRefs, path, results) {
   } else {
     _.reduce(
       authRefs,
-      (seenNames, scopes, index) => {
-        _.each(scopes, (scopes, name) => {
+      (seenNames, allScopes, index) => {
+        _.each(allScopes, (scopes, name) => {
           const authPtr = ['securityDefinitions', name];
           const authRefPath = path.concat(index.toString(), name);
 
@@ -801,13 +799,13 @@ const processAuthRefs = function(documentMetadata, authRefs, path, results) {
 
           // Add reference or record unresolved authorization
           if (addReference(documentMetadata, authPtr, authRefPath, results)) {
-            _.each(scopes, (scope, index) => {
+            _.each(scopes, (scope, idx) => {
               // Add reference or record unresolved authorization scope
               const sPtr = authPtr.concat(['scopes', scope]);
               addReference(
                 documentMetadata,
                 sPtr,
-                authRefPath.concat(index.toString()),
+                authRefPath.concat(idx.toString()),
                 results,
               );
             });
@@ -827,8 +825,8 @@ const resolveRefs = function(apiDOrSO, callback) {
   const jsonRefsOptions = {
     includeInvalid: true,
     loaderOptions: {
-      processContent(res, callback) {
-        callback(undefined, YAML.safeLoad(res.text));
+      processContent(res, processContentCallback) {
+        processContentCallback(undefined, YAML.safeLoad(res.text));
       },
     },
   };
@@ -841,7 +839,7 @@ const resolveRefs = function(apiDOrSO, callback) {
 
     // Resolve references
     JsonRefs.resolveRefs(apiDOrSO, jsonRefsOptions)
-      .then(function(results) {
+      .then(results => {
         removeCirculars(results.resolved);
 
         // Fix circular references
@@ -946,7 +944,7 @@ const validateParameters = function(
 
   _.reduce(
     parameters,
-    function(seenParameters, parameter, index) {
+    (seenParameters, parameter, index) => {
       const pPath = path.concat(['parameters', index.toString()]);
 
       // Unresolved parameter
@@ -1084,7 +1082,7 @@ const validateSwagger1_2 = function(
   // Process each API Declaration
   adResourcePaths = _.reduce(
     apiDeclarations,
-    function(seenResourcePaths, apiDeclaration, index) {
+    (seenResourcePaths, apiDeclaration, index) => {
       const aResults = (results.apiDeclarations[index] = {
         errors: [],
         warnings: [],
@@ -1124,8 +1122,8 @@ const validateSwagger1_2 = function(
       // Process the API definitions
       _.reduce(
         apiDeclaration.apis,
-        function(seenPaths, api, index) {
-          const aPath = ['apis', index.toString()];
+        (seenPaths, api, apisIndex) => {
+          const aPath = ['apis', apisIndex.toString()];
           const nPath = normalizePath(api.path);
 
           // Validate duplicate resource path
@@ -1143,8 +1141,11 @@ const validateSwagger1_2 = function(
           // Process the API operations
           _.reduce(
             api.operations,
-            function(seenMethods, operation, index) {
-              const oPath = aPath.concat(['operations', index.toString()]);
+            (seenMethods, operation, operationsIndex) => {
+              const oPath = aPath.concat([
+                'operations',
+                operationsIndex.toString(),
+              ]);
 
               // Validate duplicate operation method
               validateNoExist(
@@ -1201,10 +1202,10 @@ const validateSwagger1_2 = function(
               // Validate unique response code
               _.reduce(
                 operation.responseMessages,
-                function(seenResponseCodes, responseMessage, index) {
+                (seenResponseCodes, responseMessage, responseMessagesIndex) => {
                   const rmPath = oPath.concat([
                     'responseMessages',
-                    index.toString(),
+                    responseMessagesIndex.toString(),
                   ]);
 
                   validateNoExist(
