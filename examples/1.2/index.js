@@ -38,8 +38,9 @@ swaggerTools.initializeMiddleware(
 
     // Start the server
     http.createServer(app).listen(PORT, () => {
-      console.log(`Your server is listening on port ${PORT}`);
-      console.log(`View the swagger docs at http://localhost:${PORT}/docs/`);
+      console.log(
+        `Server is listening on port ${PORT} --> Swagger docs: http://localhost:${PORT}/docs/`,
+      );
     });
   },
 );
