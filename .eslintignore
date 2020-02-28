@@ -10,3 +10,4 @@ schemas
 test
 src/index.js
 dist
+src/middleware/swagger-ui/**/*.js
