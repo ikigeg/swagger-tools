@@ -33,6 +33,19 @@ const YAML = require('js-yaml');
 const validators = require('./validators');
 const helpers = require('./helpers');
 
+const apiDeclarationJson = require('../schemas/1.2/apiDeclaration.json');
+const authorizationObjectJson = require('../schemas/1.2/authorizationObject.json');
+const dataTypeJson = require('../schemas/1.2/dataType.json');
+const dataTypeBaseJson = require('../schemas/1.2/dataTypeBase.json');
+const infoObjectJson = require('../schemas/1.2/infoObject.json');
+const modelsObjectJson = require('../schemas/1.2/modelsObject.json');
+const oauth2GrantTypeJson = require('../schemas/1.2/oauth2GrantType.json');
+const operationObjectJson = require('../schemas/1.2/operationObject.json');
+const parameterObjectJson = require('../schemas/1.2/parameterObject.json');
+const resourceListingJson = require('../schemas/1.2/resourceListing.json');
+const resourceObjectJson = require('../schemas/1.2/resourceObject.json');
+const schema20 = require('../schemas/2.0/schema.json');
+
 // Work around swagger-converter packaging issue (Browser builds only)
 if (_.isPlainObject(swaggerConverter)) {
   swaggerConverter = global.SwaggerConverter.convert;
@@ -1462,7 +1475,7 @@ const validateStructurally = (spec, rlOrSO, apiDeclarations, callback) => {
  *
  * @constructor
  */
-const Specification = function(version) {
+function Specification(version) {
   const that = this;
 
   const createValidators = (spec, validatorsMap) => {
@@ -1501,17 +1514,17 @@ const Specification = function(version) {
 
       // Here explicitly to allow browserify to work
       this.schemas = {
-        'apiDeclaration.json': require('../schemas/1.2/apiDeclaration.json'),
-        'authorizationObject.json': require('../schemas/1.2/authorizationObject.json'),
-        'dataType.json': require('../schemas/1.2/dataType.json'),
-        'dataTypeBase.json': require('../schemas/1.2/dataTypeBase.json'),
-        'infoObject.json': require('../schemas/1.2/infoObject.json'),
-        'modelsObject.json': require('../schemas/1.2/modelsObject.json'),
-        'oauth2GrantType.json': require('../schemas/1.2/oauth2GrantType.json'),
-        'operationObject.json': require('../schemas/1.2/operationObject.json'),
-        'parameterObject.json': require('../schemas/1.2/parameterObject.json'),
-        'resourceListing.json': require('../schemas/1.2/resourceListing.json'),
-        'resourceObject.json': require('../schemas/1.2/resourceObject.json'),
+        'apiDeclaration.json': apiDeclarationJson,
+        'authorizationObject.json': authorizationObjectJson,
+        'dataType.json': dataTypeJson,
+        'dataTypeBase.json': dataTypeBaseJson,
+        'infoObject.json': infoObjectJson,
+        'modelsObject.json': modelsObjectJson,
+        'oauth2GrantType.json': oauth2GrantTypeJson,
+        'operationObject.json': operationObjectJson,
+        'parameterObject.json': parameterObjectJson,
+        'resourceListing.json': resourceListingJson,
+        'resourceObject.json': resourceObjectJson,
       };
 
       this.validators = createValidators(this, {
@@ -1550,7 +1563,7 @@ const Specification = function(version) {
 
       // Here explicitly to allow browserify to work
       this.schemas = {
-        'schema.json': require('../schemas/2.0/schema.json'),
+        'schema.json': schema20,
       };
 
       this.validators = createValidators(this, {
@@ -1566,7 +1579,7 @@ const Specification = function(version) {
   }
 
   this.version = version;
-};
+}
 
 /**
  * Returns the result of the validation of the Swagger document(s).
@@ -1654,7 +1667,7 @@ Specification.prototype.validate = function validate(
  *
  * @throws Error if there are validation errors while creating
  */
-Specification.prototype.composeModel = function(
+Specification.prototype.composeModel = function composeModel(
   apiDOrSO,
   origModelIdOrRef,
   callback,
@@ -1758,7 +1771,7 @@ Specification.prototype.composeModel = function(
  *
  * @throws Error if there are validation errors while creating
  */
-Specification.prototype.validateModel = function(
+Specification.prototype.validateModel = function validateModel(
   apiDOrSO,
   modelIdOrRef,
   data,
@@ -1827,7 +1840,14 @@ Specification.prototype.validateModel = function(
  *
  * @throws Error if there are upstream errors
  */
-Specification.prototype.resolve = function(document, ptr, callback) {
+Specification.prototype.resolve = function resolve(
+  document,
+  origPtr,
+  origCallback,
+) {
+  let ptr = origPtr;
+  let callback = origCallback;
+
   const respond = doc => {
     if (_.isString(ptr)) {
       return callback(undefined, traverse(doc).get(JsonRefs.pathFromPtr(ptr)));
@@ -1843,7 +1863,7 @@ Specification.prototype.resolve = function(document, ptr, callback) {
   }
 
   if (arguments.length === 2) {
-    callback = arguments[1];
+    [, callback] = arguments;
     ptr = undefined;
   }
 
@@ -1880,6 +1900,7 @@ Specification.prototype.resolve = function(document, ptr, callback) {
   } else {
     return respond(documentMetadata.resolved);
   }
+  return undefined;
 };
 
 /**
