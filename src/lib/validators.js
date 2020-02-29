@@ -122,7 +122,9 @@ const throwErrorWithCode = (code, msg) => {
   throw err;
 };
 
-function validateAgainstSchema(schemaOrName, data, validator) {
+function validateAgainstSchema(schemaOrName, data, origValidator) {
+  let validator = origValidator;
+
   const sanitizeError = origObj => {
     const obj = origObj;
 
@@ -181,10 +183,10 @@ function validateAgainstSchema(schemaOrName, data, validator) {
       );
     } catch (err) {
       err.results = {
-        errors: _.map(validator.getLastErrors(), function(err) {
-          sanitizeError(err);
+        errors: _.map(validator.getLastErrors(), mapErr => {
+          sanitizeError(mapErr);
 
-          return err;
+          return mapErr;
         }),
         warnings: [],
       };
@@ -228,8 +230,9 @@ function validateContentType(gPOrC, oPOrC, reqOrRes) {
   let contentType = isResponse
     ? reqOrRes.getHeader('content-type')
     : reqOrRes.headers['content-type'];
-  const pOrC = _.map(_.union(gPOrC, oPOrC), function(contentType) {
-    return contentType.split(';')[0];
+
+  const pOrC = _.map(_.union(gPOrC, oPOrC), type => {
+    return type.split(';')[0];
   });
 
   if (!contentType) {
@@ -240,7 +243,7 @@ function validateContentType(gPOrC, oPOrC, reqOrRes) {
     }
   }
 
-  contentType = contentType.split(';')[0];
+  [contentType] = contentType.split(';');
 
   if (
     pOrC.length > 0 &&
@@ -285,7 +288,8 @@ const validateEnum = (val, allowed) => {
  *
  * @throws Error if the value is greater than the maximum
  */
-const validateMaximum = function(val, maximum, type, exclusive) {
+const validateMaximum = (val, maximum, type, origExclusive) => {
+  let exclusive = origExclusive;
   const code = exclusive === true ? 'MAXIMUM_EXCLUSIVE' : 'MAXIMUM';
   let testMax;
   let testVal;
@@ -325,7 +329,7 @@ const validateMaximum = function(val, maximum, type, exclusive) {
  *
  * @throws Error if the value contains more items than allowable
  */
-const validateMaxItems = function(val, maxItems) {
+const validateMaxItems = (val, maxItems) => {
   if (!_.isUndefined(maxItems) && val.length > maxItems) {
     throwErrorWithCode(
       'ARRAY_LENGTH_LONG',
@@ -342,7 +346,7 @@ const validateMaxItems = function(val, maxItems) {
  *
  * @throws Error if the value's length is greater than the maximum
  */
-const validateMaxLength = function(val, maxLength) {
+const validateMaxLength = (val, maxLength) => {
   if (!_.isUndefined(maxLength) && val.length > maxLength) {
     throwErrorWithCode(
       'MAX_LENGTH',
@@ -359,7 +363,7 @@ const validateMaxLength = function(val, maxLength) {
  *
  * @throws Error if the value's property count is less than the maximum
  */
-const validateMaxProperties = function(val, maxProperties) {
+const validateMaxProperties = (val, maxProperties) => {
   const propCount = _.isPlainObject(val) ? Object.keys(val).length : 0;
 
   if (!_.isUndefined(maxProperties) && propCount > maxProperties) {
@@ -379,7 +383,8 @@ const validateMaxProperties = function(val, maxProperties) {
  *
  * @throws Error if the value is less than the minimum
  */
-const validateMinimum = function(val, minimum, type, exclusive) {
+const validateMinimum = (val, minimum, type, origExclusive) => {
+  let exclusive = origExclusive;
   const code = exclusive === true ? 'MINIMUM_EXCLUSIVE' : 'MINIMUM';
   let testMin;
   let testVal;
@@ -419,7 +424,7 @@ const validateMinimum = function(val, minimum, type, exclusive) {
  *
  * @throws Error if the value contains fewer items than allowable
  */
-const validateMinItems = function(val, minItems) {
+const validateMinItems = (val, minItems) => {
   if (!_.isUndefined(minItems) && val.length < minItems) {
     throwErrorWithCode(
       'ARRAY_LENGTH_SHORT',
@@ -436,7 +441,7 @@ const validateMinItems = function(val, minItems) {
  *
  * @throws Error if the value's length is less than the minimum
  */
-const validateMinLength = function(val, minLength) {
+const validateMinLength = (val, minLength) => {
   if (!_.isUndefined(minLength) && val.length < minLength) {
     throwErrorWithCode(
       'MIN_LENGTH',
@@ -453,7 +458,7 @@ const validateMinLength = function(val, minLength) {
  *
  * @throws Error if the value's property count is less than the minimum
  */
-const validateMinProperties = function(val, minProperties) {
+const validateMinProperties = (val, minProperties) => {
   const propCount = _.isPlainObject(val) ? Object.keys(val).length : 0;
 
   if (!_.isUndefined(minProperties) && propCount < minProperties) {
@@ -472,7 +477,7 @@ const validateMinProperties = function(val, minProperties) {
  *
  * @throws Error if the value contains fewer items than allowable
  */
-const validateMultipleOf = function(val, multipleOf) {
+const validateMultipleOf = (val, multipleOf) => {
   if (!_.isUndefined(multipleOf) && val % multipleOf !== 0) {
     throwErrorWithCode('MULTIPLE_OF', `Not a multiple of ${multipleOf}`);
   }
@@ -487,7 +492,7 @@ const validateMultipleOf = function(val, multipleOf) {
  *
  * @throws Error if the value does not match the pattern
  */
-const validatePattern = function(val, pattern) {
+const validatePattern = (val, pattern) => {
   if (!_.isUndefined(pattern) && _.isNull(val.match(new RegExp(pattern)))) {
     throwErrorWithCode(
       'PATTERN',
@@ -504,7 +509,7 @@ const validatePattern = function(val, pattern) {
  *
  * @throws Error if the value is required but is not present
  */
-const validateRequiredness = function(val, required) {
+const validateRequiredness = (val, required) => {
   if (!_.isUndefined(required) && required === true && _.isUndefined(val)) {
     throwErrorWithCode('REQUIRED', 'Is required');
   }
@@ -523,12 +528,13 @@ const validateRequiredness = function(val, required) {
  */
 const validateTypeAndFormat = function validateTypeAndFormat(
   version,
-  val,
+  origVal,
   type,
   format,
   allowEmptyValue,
   skipError,
 ) {
+  let val = origVal;
   let result = true;
   const oVal = val;
 
@@ -538,7 +544,7 @@ const validateTypeAndFormat = function validateTypeAndFormat(
   }
 
   if (_.isArray(val)) {
-    _.each(val, function(aVal, index) {
+    _.each(val, (aVal, index) => {
       if (
         !validateTypeAndFormat(
           version,
@@ -556,6 +562,7 @@ const validateTypeAndFormat = function validateTypeAndFormat(
       }
     });
   } else {
+    // eslint-disable-next-line default-case
     switch (type) {
       case 'boolean':
         // Coerce the value only for Swagger 1.2
@@ -587,6 +594,7 @@ const validateTypeAndFormat = function validateTypeAndFormat(
         break;
       case 'string':
         if (!_.isUndefined(format)) {
+          // eslint-disable-next-line default-case
           switch (format) {
             case 'date':
               result = isValidDate(val);
@@ -604,6 +612,7 @@ const validateTypeAndFormat = function validateTypeAndFormat(
   }
 
   if (skipError) {
+    // eslint-disable-next-line consistent-return
     return result;
   }
   if (!result) {
@@ -626,7 +635,7 @@ const validateTypeAndFormat = function validateTypeAndFormat(
  *
  * @throws Error if the value has duplicates
  */
-const validateUniqueItems = function(val, isUnique) {
+const validateUniqueItems = (val, isUnique) => {
   if (!_.isUndefined(isUnique) && _.uniq(val).length !== val.length) {
     throwErrorWithCode(
       'ARRAY_UNIQUE',
@@ -645,9 +654,13 @@ const validateUniqueItems = function(val, isUnique) {
  *
  * @throws Error if any validation failes
  */
-var validateSchemaConstraints = function(version, schema, path, val) {
-  var resolveSchema = function(schema) {
-    let resolved = schema;
+const validateSchemaConstraints = (version, origSchema, origPath, origVal) => {
+  let schema = origSchema;
+  let path = origPath;
+  let val = origVal;
+
+  const resolveSchema = schemaToResolve => {
+    let resolved = schemaToResolve;
 
     if (resolved.schema) {
       path = path.concat(['schema']);
@@ -659,7 +672,6 @@ var validateSchemaConstraints = function(version, schema, path, val) {
   };
 
   let { type } = schema;
-  let allowEmptyValue;
 
   if (!type) {
     if (!schema.schema) {
@@ -674,7 +686,7 @@ var validateSchemaConstraints = function(version, schema, path, val) {
     }
   }
 
-  allowEmptyValue = schema ? schema.allowEmptyValue === true : false;
+  const allowEmptyValue = schema ? schema.allowEmptyValue === true : false;
 
   try {
     // Always perform this check even if there is no value
@@ -695,13 +707,13 @@ var validateSchemaConstraints = function(version, schema, path, val) {
     }
 
     if (type === 'array') {
-      _.each(val, function(val, index) {
+      _.each(val, (v, index) => {
         try {
           validateSchemaConstraints(
             version,
             schema.items || {},
             path.concat(index.toString()),
-            val,
+            v,
           );
         } catch (err) {
           err.message = `Value at index ${index} ${
