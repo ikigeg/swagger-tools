@@ -238,10 +238,11 @@ const getOrComposeSchema = (documentMetadata, modelId) => {
   }
 
   // Scrub id properties
-  composed = traverse(composed).map(function(val) {
+  composed = traverse(composed).map(function traverseMap(val) {
     if (this.key === 'id' && _.isString(val)) {
       this.remove();
     }
+    return undefined;
   });
 
   composed.title = title;
@@ -260,19 +261,23 @@ const createUnusedErrorOrWarning = (val, codeSuffix, msgPrefix, path, dest) => {
 
 const getDocumentCache = apiDOrSO => {
   const key = SparkMD5.hash(JSON.stringify(apiDOrSO));
-  let cacheEntry =
-    documentCache[key] ||
-    _.find(documentCache, cacheEntry => {
-      return cacheEntry.resolvedId === key;
+  let cacheEntry;
+  if (documentCache[key]) {
+    cacheEntry = documentCache[key];
+  } else {
+    cacheEntry = _.find(documentCache, docEntry => {
+      return docEntry.resolvedId === key;
     });
+  }
 
   if (!cacheEntry) {
-    cacheEntry = documentCache[key] = {
+    documentCache[key] = {
       definitions: {},
       original: apiDOrSO,
       resolved: undefined,
       swaggerVersion: helpers.getSwaggerVersion(apiDOrSO),
     };
+    cacheEntry = documentCache[key];
   }
 
   return cacheEntry;
@@ -1081,10 +1086,11 @@ const validateSwagger12 = (
   adResourcePaths = _.reduce(
     apiDeclarations,
     (seenResourcePaths, apiDeclaration, index) => {
-      const aResults = (results.apiDeclarations[index] = {
+      results.apiDeclarations[index] = {
         errors: [],
         warnings: [],
-      });
+      };
+      const aResults = results.apiDeclarations[index];
       const adDocumentMetadata = getDocumentCache(apiDeclaration);
 
       // Identify duplicate resource paths defined in the API Declarations
@@ -1288,7 +1294,7 @@ const validateSwagger20 = (spec, swaggerObject, callback) => {
 
   _.reduce(
     documentMetadata.resolved.paths,
-    function(seenPaths, path, name) {
+    (seenPaths, path, name) => {
       const pPath = ['paths', name];
       const nPath = normalizePath(name);
 
@@ -1421,7 +1427,7 @@ const validateStructurally = (spec, rlOrSO, apiDeclarations, callback) => {
           apiDeclarations: [],
         };
 
-        async.map(
+        return async.map(
           apiDeclarations,
           (apiDeclaration, callback2) => {
             validateAgainstSchema(
@@ -1443,9 +1449,8 @@ const validateStructurally = (spec, rlOrSO, apiDeclarations, callback) => {
             return callback(undefined, results);
           },
         );
-      } else {
-        callback(undefined, results);
       }
+      return callback(undefined, results);
     },
   );
 };
