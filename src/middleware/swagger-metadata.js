@@ -560,4 +560,4 @@ function swaggerMetadataMiddleware(rlOrSO, apiDeclarations) {
 }
 
 module.exports = swaggerMetadataMiddleware;
-exports = swaggerMetadataMiddleware;
+exports = module.exports;
