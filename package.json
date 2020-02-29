@@ -70,7 +70,7 @@
     "prettier": "^1.19.1",
     "prettier-eslint": "^9.0.1",
     "rimraf": "^3.0.2",
-    "run-sequence": "^2.0.0",
+    "run-sequence": "^2.2.1",
     "supertest": "^4.0.2",
     "webpack": "^4.41.6",
     "webpack-bundle-analyzer": "^3.6.0",
