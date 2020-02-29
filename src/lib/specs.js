@@ -248,13 +248,7 @@ const getOrComposeSchema = (documentMetadata, modelId) => {
   return composed;
 };
 
-const createUnusedErrorOrWarning = function(
-  val,
-  codeSuffix,
-  msgPrefix,
-  path,
-  dest,
-) {
+const createUnusedErrorOrWarning = (val, codeSuffix, msgPrefix, path, dest) => {
   createErrorOrWarning(
     `UNUSED_${codeSuffix}`,
     `${msgPrefix} is defined but is not used: ${val}`,
@@ -263,7 +257,7 @@ const createUnusedErrorOrWarning = function(
   );
 };
 
-const getDocumentCache = function(apiDOrSO) {
+const getDocumentCache = apiDOrSO => {
   const key = SparkMD5.hash(JSON.stringify(apiDOrSO));
   let cacheEntry =
     documentCache[key] ||
@@ -357,13 +351,13 @@ const validateNoExist = (data, val, codeSuffix, msgPrefix, path, dest) => {
   }
 };
 
-const validateSchemaConstraints = function(
+const validateSchemaConstraints = (
   documentMetadata,
   schema,
   path,
   results,
   skip,
-) {
+) => {
   try {
     validators.validateSchemaConstraints(
       documentMetadata.swaggerVersion,
@@ -640,9 +634,9 @@ const processDocument = function(documentMetadata, results) {
     }
 
     // Remove self reference from the end of the lineage (Front too if cyclical)
-    _.each(lineage.slice(metadata.cyclical ? 1 : 0), id => {
+    _.each(lineage.slice(metadata.cyclical ? 1 : 0), lineageId => {
       const pModel = traverse(documentMetadata.resolved).get(
-        JsonRefs.pathFromPtr(id),
+        JsonRefs.pathFromPtr(lineageId),
       );
 
       _.each(Object.keys(pModel.properties || {}), name => {
@@ -861,7 +855,7 @@ const resolveRefs = function(apiDOrSO, callback) {
   }
 };
 
-const validateAgainstSchema = function(spec, schemaOrName, data, callback) {
+function validateAgainstSchema(spec, schemaOrName, data, callback) {
   const validator = _.isString(schemaOrName)
     ? spec.validators[schemaOrName]
     : helpers.createJsonValidator();
@@ -877,12 +871,12 @@ const validateAgainstSchema = function(spec, schemaOrName, data, callback) {
     return callback(err);
   }
 
-  resolveRefs(data, function(err) {
+  return resolveRefs(data, err => {
     return callback(err);
   });
-};
+}
 
-const validateDefinitions = function(documentMetadata, results) {
+function validateDefinitions(documentMetadata, results) {
   // Validate unused definitions
   _.each(documentMetadata.definitions, (metadata, id) => {
     let defPath = JsonRefs.pathFromPtr(id);
@@ -917,9 +911,9 @@ const validateDefinitions = function(documentMetadata, results) {
       );
     }
   });
-};
+}
 
-const validateParameters = function(
+const validateParameters = (
   spec,
   documentMetadata,
   nPath,
@@ -927,17 +921,18 @@ const validateParameters = function(
   path,
   results,
   skipMissing,
-) {
-  const createParameterComboError = function(path) {
+) => {
+  const createParameterComboError = pPath => {
     createErrorOrWarning(
       'INVALID_PARAMETER_COMBINATION',
       `API cannot have a a body parameter and a ${
         spec.version === '1.2' ? 'form' : 'formData'
       } parameter`,
-      path,
+      pPath,
       results.errors,
     );
   };
+
   const pathParams = [];
   let seenBodyParam = false;
   let seenFormParam = false;
@@ -1019,6 +1014,7 @@ const validateParameters = function(
         parameter.skipErrors,
       );
 
+      // eslint-disable-next-line consistent-return
       return seenParameters.concat(parameter.name);
     },
     [],
@@ -1058,7 +1054,7 @@ const validateSwagger1_2 = function(
   // Process Resource Listing resource definitions
   rlResourcePaths = _.reduce(
     resourceListing.apis,
-    function(seenPaths, api, index) {
+    (seenPaths, api, index) => {
       // Identify duplicate resource paths defined in the Resource Listing
       validateNoExist(
         seenPaths,
@@ -1269,7 +1265,7 @@ const validateSwagger1_2 = function(
   callback(undefined, results);
 };
 
-const validateSwagger2_0 = function(spec, swaggerObject, callback) {
+const validateSwagger2_0 = (spec, swaggerObject, callback) => {
   // jshint ignore:line
   const documentMetadata = getDocumentCache(swaggerObject);
   const results = {
@@ -1393,8 +1389,8 @@ const validateSwagger2_0 = function(spec, swaggerObject, callback) {
   callback(undefined, results);
 };
 
-const validateSemantically = function(spec, rlOrSO, apiDeclarations, callback) {
-  const cbWrapper = function(err, results) {
+const validateSemantically = (spec, rlOrSO, apiDeclarations, callback) => {
+  const cbWrapper = (err, results) => {
     callback(err, helpers.formatResults(results));
   };
   if (spec.version === '1.2') {
@@ -1409,7 +1405,8 @@ const validateStructurally = function(spec, rlOrSO, apiDeclarations, callback) {
     spec,
     spec.version === '1.2' ? 'resourceListing.json' : 'schema.json',
     rlOrSO,
-    function(err, results) {
+    (err, origResults) => {
+      let results = origResults;
       if (err) {
         return callback(err);
       }
@@ -1424,7 +1421,7 @@ const validateStructurally = function(spec, rlOrSO, apiDeclarations, callback) {
 
         async.map(
           apiDeclarations,
-          function(apiDeclaration, callback2) {
+          (apiDeclaration, callback2) => {
             validateAgainstSchema(
               spec,
               'apiDeclaration.json',
@@ -1432,16 +1429,16 @@ const validateStructurally = function(spec, rlOrSO, apiDeclarations, callback) {
               callback2,
             );
           },
-          function(err, allResults) {
-            if (err) {
-              return callback(err);
+          (mapErr, allResults) => {
+            if (mapErr) {
+              return callback(mapErr);
             }
 
             _.each(allResults, (result, index) => {
               results.apiDeclarations[index] = result;
             });
 
-            callback(undefined, results);
+            return callback(undefined, results);
           },
         );
       } else {
@@ -1471,7 +1468,7 @@ const Specification = function(version) {
       {},
     );
   };
-  const fixSchemaId = function(schemaName) {
+  const fixSchemaId = schemaName => {
     // Swagger 1.2 schema files use one id but use a different id when referencing schema files.  We also use the schema
     // file name to reference the schema in ZSchema.  To fix this so that the JSON Schema validator works properly, we
     // need to set the id to be the name of the schema file.
@@ -1481,6 +1478,7 @@ const Specification = function(version) {
 
     return fixed;
   };
+
   const primitives = ['string', 'number', 'boolean', 'integer', 'array'];
 
   switch (version) {
@@ -1618,7 +1616,7 @@ Specification.prototype.validate = function(rlOrSO, apiDeclarations, callback) {
   const that = this;
 
   // Perform the validation
-  validateStructurally(this, rlOrSO, apiDeclarations, function(err, result) {
+  validateStructurally(this, rlOrSO, apiDeclarations, (err, result) => {
     if (err || helpers.formatResults(result)) {
       callback(err, result);
     } else {
@@ -1642,13 +1640,13 @@ Specification.prototype.validate = function(rlOrSO, apiDeclarations, callback) {
  */
 Specification.prototype.composeModel = function(
   apiDOrSO,
-  modelIdOrRef,
+  origModelIdOrRef,
   callback,
 ) {
+  let modelIdOrRef = origModelIdOrRef;
   const swaggerVersion = helpers.getSwaggerVersion(apiDOrSO);
-  const doComposition = function(err, results) {
-    let documentMetadata;
-
+  const doComposition = (err, origResults) => {
+    let results = origResults;
     if (err) {
       return callback(err);
     }
@@ -1656,7 +1654,7 @@ Specification.prototype.composeModel = function(
       return handleValidationError(results, callback);
     }
 
-    documentMetadata = getDocumentCache(apiDOrSO);
+    const documentMetadata = getDocumentCache(apiDOrSO);
     results = {
       errors: [],
       warnings: [],
@@ -1672,7 +1670,10 @@ Specification.prototype.composeModel = function(
       return handleValidationError(results, callback);
     }
 
-    callback(undefined, getOrComposeSchema(documentMetadata, modelIdOrRef));
+    return callback(
+      undefined,
+      getOrComposeSchema(documentMetadata, modelIdOrRef),
+    );
   };
 
   switch (this.version) {
@@ -1789,12 +1790,12 @@ Specification.prototype.validateModel = function(
 
   const that = this;
 
-  this.composeModel(apiDOrSO, modelIdOrRef, function(err, result) {
+  this.composeModel(apiDOrSO, modelIdOrRef, (err, result) => {
     if (err) {
       return callback(err);
     }
 
-    validateAgainstSchema(that, result, data, callback);
+    return validateAgainstSchema(that, result, data, callback);
   });
 };
 
@@ -1811,15 +1812,11 @@ Specification.prototype.validateModel = function(
  * @throws Error if there are upstream errors
  */
 Specification.prototype.resolve = function(document, ptr, callback) {
-  let documentMetadata;
-  const respond = function(document) {
+  const respond = doc => {
     if (_.isString(ptr)) {
-      return callback(
-        undefined,
-        traverse(document).get(JsonRefs.pathFromPtr(ptr)),
-      );
+      return callback(undefined, traverse(doc).get(JsonRefs.pathFromPtr(ptr)));
     }
-    return callback(undefined, document);
+    return callback(undefined, doc);
   };
 
   // Validate arguments
@@ -1844,7 +1841,7 @@ Specification.prototype.resolve = function(document, ptr, callback) {
     throw new TypeError('callback must be a function');
   }
 
-  documentMetadata = getDocumentCache(document);
+  const documentMetadata = getDocumentCache(document);
 
   // Swagger 1.2 is not supported due to invalid JSON References being used.  Even if the JSON References were valid,
   // the JSON Schema for Swagger 1.2 do not allow JavaScript objects in all places where the resoution would occur.
@@ -1854,7 +1851,7 @@ Specification.prototype.resolve = function(document, ptr, callback) {
 
   if (!documentMetadata.resolved) {
     // Ensure the document is valid first
-    this.validate(document, function(err, results) {
+    this.validate(document, (err, results) => {
       if (err) {
         return callback(err);
       }
@@ -1882,13 +1879,22 @@ Specification.prototype.resolve = function(document, ptr, callback) {
  * @throws Error if the arguments provided are not valid
  */
 Specification.prototype.convert = function(
-  resourceListing,
-  apiDeclarations,
+  origResourceListing,
+  origApiDeclarations,
   skipValidation,
-  callback,
+  origCallback,
 ) {
-  const doConvert = function(resourceListing, apiDeclarations) {
-    callback(undefined, swaggerConverter(resourceListing, apiDeclarations));
+  let callback = origCallback;
+  const resourceListing = origResourceListing;
+  let apiDeclarations = origApiDeclarations;
+
+  const doConvert = (origResources, origDeclarations) => {
+    const resourceListingToConvert = origResources;
+    const apiDeclarationsToConvert = origDeclarations;
+    callback(
+      undefined,
+      swaggerConverter(resourceListingToConvert, apiDeclarationsToConvert),
+    );
   };
 
   if (this.version !== '1.2') {
@@ -1924,7 +1930,7 @@ Specification.prototype.convert = function(
   if (skipValidation === true) {
     doConvert(resourceListing, apiDeclarations);
   } else {
-    this.validate(resourceListing, apiDeclarations, function(err, results) {
+    this.validate(resourceListing, apiDeclarations, (err, results) => {
       if (err) {
         return callback(err);
       }
@@ -1932,10 +1938,14 @@ Specification.prototype.convert = function(
         return handleValidationError(results, callback);
       }
 
-      doConvert(resourceListing, apiDeclarations);
+      return doConvert(resourceListing, apiDeclarations);
     });
   }
 };
 
-module.exports.v1 = module.exports.v1_2 = new Specification('1.2'); // jshint ignore:line
-module.exports.v2 = module.exports.v2_0 = new Specification('2.0'); // jshint ignore:line
+const v12 = new Specification('1.2');
+const v20 = new Specification('2.0');
+module.exports.v1_2 = v12;
+module.exports.v2_0 = v20;
+module.exports.v1 = v12;
+module.exports.v2 = v20;
