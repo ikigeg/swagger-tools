@@ -1,4 +1,4 @@
-/* eslint-disable default-case */
+/* eslint-disable default-case, prefer-rest-params */
 /*
  * The MIT License (MIT)
  *
@@ -373,7 +373,7 @@ const validateSchemaConstraints = (
   }
 };
 
-const processDocument = function(origDocumentMetadata, results) {
+const processDocument = (origDocumentMetadata, results) => {
   const documentMetadata = origDocumentMetadata;
   const { swaggerVersion } = documentMetadata;
 
@@ -1575,9 +1575,11 @@ const Specification = function(version) {
  */
 Specification.prototype.validate = function validate(
   rlOrSO,
-  apiDeclarations,
-  callback,
+  origApiDeclarations,
+  origCallback,
 ) {
+  let callback = origCallback;
+  let apiDeclarations = origApiDeclarations;
   // Validate arguments
   switch (this.version) {
     case '1.2':
@@ -1608,7 +1610,7 @@ Specification.prototype.validate = function validate(
   }
 
   if (this.version === '2.0') {
-    callback = arguments[1];
+    [, callback] = arguments;
   }
 
   if (_.isUndefined(callback)) {
@@ -1927,6 +1929,7 @@ Specification.prototype.convert = function convert(
   }
 
   if (arguments.length < 4) {
+    // eslint-disable-next-line prefer-rest-params
     callback = arguments[arguments.length - 1];
   }
 
