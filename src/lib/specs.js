@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 /*
  * The MIT License (MIT)
  *
@@ -372,17 +373,20 @@ const validateSchemaConstraints = (
   }
 };
 
-const processDocument = function(documentMetadata, results) {
+const processDocument = function(origDocumentMetadata, results) {
+  const documentMetadata = origDocumentMetadata;
   const { swaggerVersion } = documentMetadata;
-  const getDefinitionMetadata = function(defPath, inline) {
+
+  const getDefinitionMetadata = (defPath, inline) => {
     const defPtr = JsonRefs.pathToPtr(defPath);
     let metadata = documentMetadata.definitions[defPtr];
 
     if (!metadata) {
-      metadata = documentMetadata.definitions[defPtr] = {
+      documentMetadata.definitions[defPtr] = {
         inline: inline || false,
         references: [],
       };
+      metadata = documentMetadata.definitions[defPtr];
 
       // For model definitions, add the inheritance properties
       if (
@@ -551,7 +555,7 @@ const processDocument = function(documentMetadata, results) {
   switch (swaggerVersion) {
     case '2.0':
       // Process parameter definitions
-      _.each(documentMetadata.resolved.parameters, function(parameter, name) {
+      _.each(documentMetadata.resolved.parameters, (parameter, name) => {
         const path = ['parameters', name];
 
         getDefinitionMetadata(path);
@@ -560,7 +564,7 @@ const processDocument = function(documentMetadata, results) {
       });
 
       // Process response definitions
-      _.each(documentMetadata.resolved.responses, function(response, name) {
+      _.each(documentMetadata.resolved.responses, (response, name) => {
         const path = ['responses', name];
 
         getDefinitionMetadata(path);
@@ -623,9 +627,7 @@ const processDocument = function(documentMetadata, results) {
     if (metadata.cyclical) {
       createErrorOrWarning(
         `CYCLICAL_${code}_INHERITANCE`,
-        `${msgPrefix} has a circular inheritance: ${_.map(lineage, function(
-          dep,
-        ) {
+        `${msgPrefix} has a circular inheritance: ${_.map(lineage, dep => {
           return getDisplayId(dep);
         }).join(' -> ')} -> ${getDisplayId(id)}`,
         defPath.concat(swaggerVersion === '1.2' ? 'subTypes' : 'allOf'),
@@ -813,7 +815,7 @@ const processAuthRefs = (documentMetadata, authRefs, path, results) => {
   }
 };
 
-const resolveRefs = function(apiDOrSO, callback) {
+const resolveRefs = (apiDOrSO, callback) => {
   const cacheEntry = getDocumentCache(apiDOrSO);
   const swaggerVersion = helpers.getSwaggerVersion(apiDOrSO);
   const jsonRefsOptions = {
@@ -1035,12 +1037,12 @@ const validateParameters = (
   }
 };
 
-const validateSwagger1_2 = function(
+const validateSwagger12 = (
   spec,
   resourceListing,
   apiDeclarations,
   callback,
-) {
+) => {
   // jshint ignore:line
   let adResourcePaths = [];
   const rlDocumentMetadata = getDocumentCache(resourceListing);
@@ -1265,7 +1267,7 @@ const validateSwagger1_2 = function(
   callback(undefined, results);
 };
 
-const validateSwagger2_0 = (spec, swaggerObject, callback) => {
+const validateSwagger20 = (spec, swaggerObject, callback) => {
   // jshint ignore:line
   const documentMetadata = getDocumentCache(swaggerObject);
   const results = {
@@ -1394,13 +1396,13 @@ const validateSemantically = (spec, rlOrSO, apiDeclarations, callback) => {
     callback(err, helpers.formatResults(results));
   };
   if (spec.version === '1.2') {
-    validateSwagger1_2(spec, rlOrSO, apiDeclarations, cbWrapper); // jshint ignore:line
+    validateSwagger12(spec, rlOrSO, apiDeclarations, cbWrapper); // jshint ignore:line
   } else {
-    validateSwagger2_0(spec, rlOrSO, cbWrapper); // jshint ignore:line
+    validateSwagger20(spec, rlOrSO, cbWrapper); // jshint ignore:line
   }
 };
 
-const validateStructurally = function(spec, rlOrSO, apiDeclarations, callback) {
+const validateStructurally = (spec, rlOrSO, apiDeclarations, callback) => {
   validateAgainstSchema(
     spec,
     spec.version === '1.2' ? 'resourceListing.json' : 'schema.json',
@@ -1457,10 +1459,12 @@ const validateStructurally = function(spec, rlOrSO, apiDeclarations, callback) {
  */
 const Specification = function(version) {
   const that = this;
-  const createValidators = function(spec, validatorsMap) {
+
+  const createValidators = (spec, validatorsMap) => {
     return _.reduce(
       validatorsMap,
-      function(result, schemas, schemaName) {
+      (origResult, schemas, schemaName) => {
+        const result = origResult;
         result[schemaName] = helpers.createJsonValidator(schemas);
 
         return result;
@@ -1468,6 +1472,7 @@ const Specification = function(version) {
       {},
     );
   };
+
   const fixSchemaId = schemaName => {
     // Swagger 1.2 schema files use one id but use a different id when referencing schema files.  We also use the schema
     // file name to reference the schema in ZSchema.  To fix this so that the JSON Schema validator works properly, we
@@ -1568,7 +1573,11 @@ const Specification = function(version) {
  * @returns undefined if validation passes or an object containing errors and/or warnings
  * @throws Error if the arguments provided are not valid
  */
-Specification.prototype.validate = function(rlOrSO, apiDeclarations, callback) {
+Specification.prototype.validate = function validate(
+  rlOrSO,
+  apiDeclarations,
+  callback,
+) {
   // Validate arguments
   switch (this.version) {
     case '1.2':
@@ -1878,7 +1887,7 @@ Specification.prototype.resolve = function(document, ptr, callback) {
  *
  * @throws Error if the arguments provided are not valid
  */
-Specification.prototype.convert = function(
+Specification.prototype.convert = function convert(
   origResourceListing,
   origApiDeclarations,
   skipValidation,
