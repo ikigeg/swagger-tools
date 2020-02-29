@@ -4,8 +4,8 @@
   "description": "Various tools for using and integrating with Swagger.",
   "main": "src/index.js",
   "scripts": {
-    "test:unit": "mocha $(find test -type f \\( -iname 'test-*.js' ! -iname 'test-specs-browser.js' \\))",
-    "test:unit:coverage": "nyc npm run test:unit",
+    "test": "mocha $(find test -type f \\( -iname 'test-*.js' ! -iname 'test-specs-browser.js' \\))",
+    "test:unit:coverage": "nyc npm run test",
     "clean:browser": "rimraf browser/*.js",
     "clean:dist": "rimraf dist",
     "build:test": "webpack --config webpack/test.config.js",
