@@ -3,4 +3,5 @@
 ./test/browser/vendor/*.js
 examples
 bin
-src/lib/helpers.js
+src/lib
+src/middleware/helpers.js

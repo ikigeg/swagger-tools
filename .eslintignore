@@ -1,7 +1,6 @@
 .nyc_output
 coverage
 docs
-middleware
 node_modules
 samples
 schemas
@@ -9,3 +8,4 @@ test
 src/index.js
 dist
 src/middleware/swagger-ui/**/*.js
+!src/middleware/helpers.js
