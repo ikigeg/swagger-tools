@@ -6,10 +6,8 @@ module.exports = {
     node: true,
     mocha: true,
   },
-  extends: [
-    'airbnb-base', 'prettier'
-  ],
-  plugins: ['prettier', ],
+  extends: ['airbnb-base', 'prettier'],
+  plugins: ['prettier'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -18,10 +16,22 @@ module.exports = {
     ecmaVersion: 2018,
   },
   rules: {
-    "prettier/prettier": ["error", { singleQuote: true, trailingComma: "all" }],
-    curly: ["error", "all"],
-    "require-await": "error",
-    "no-trailing-spaces": ["error"],
-    "default-param-last": ["error"],
+    'prettier/prettier': [
+      'error',
+      { singleQuote: true, trailingComma: 'all' },
+    ],
+    curly: ['error', 'all'],
+    'require-await': 'error',
+    'no-trailing-spaces': ['error'],
+    'default-param-last': ['error'],
+    'quote-props': ["error", 'as-needed'],
   },
+  overrides: [
+    {
+      files: ['examples/**/*.js'],
+      rules: {
+        'no-console': 'off',
+      },
+    },
+  ],
 };
