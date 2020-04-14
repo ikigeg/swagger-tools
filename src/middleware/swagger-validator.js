@@ -83,10 +83,7 @@ const send400 = (req, res, next, origErr) => {
           err.code === 'INVALID_TYPE' &&
           err.message.split(' ')[0] === 'Value'
         ) {
-          validationMessage += err.message
-            .split(' ')
-            .slice(1)
-            .join(' ');
+          validationMessage += err.message.split(' ').slice(1).join(' ');
         } else {
           validationMessage += `is ${err.message
             .charAt(0)
@@ -99,10 +96,7 @@ const send400 = (req, res, next, origErr) => {
       case 'ARRAY_LENGTH_SHORT':
       case 'MAX_LENGTH':
       case 'MIN_LENGTH':
-        validationMessage += err.message
-          .split(' ')
-          .slice(1)
-          .join(' ');
+        validationMessage += err.message.split(' ').slice(1).join(' ');
 
         break;
 
