@@ -43,6 +43,11 @@
   "bin": {
     "swagger-tools": "./bin/swagger-tools"
   },
+  "files": [
+    "bin",
+    "src",
+    "LICENSE"
+  ],
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
