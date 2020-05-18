@@ -43,7 +43,7 @@ const draft04Url = 'http://json-schema.org/draft-04/schema';
 const specCache = {};
 
 const registerCustomFormats = json => {
-  traverse(json).forEach(() => {
+  traverse(json).forEach(function traverseJson() {
     const name = this.key;
     const format = this.node;
 
