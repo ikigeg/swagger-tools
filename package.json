@@ -1,6 +1,6 @@
 {
-  "name": "swagger-tools",
-  "version": "1.1.4",
+  "name": "@ikigeg/swagger-tools",
+  "version": "1.1.6",
   "description": "Various tools for using and integrating with Swagger.",
   "main": "src/index.js",
   "scripts": {
@@ -23,13 +23,16 @@
     "url": "https://github.com/whitlockjc"
   },
   "bugs": {
-    "url": "https://github.com/apigee-127/swagger-tools/issues"
+    "url": "https://github.com/ikigeg/swagger-tools/issues"
   },
-  "homepage": "https://github.com/apigee-127/swagger-tools",
+  "homepage": "https://github.com/ikigeg/swagger-tools#readme",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/apigee-127/swagger-tools.git"
+    "url": "git://github.com/ikigeg/swagger-tools.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "keywords": [
     "api",
@@ -42,11 +45,8 @@
   },
   "files": [
     "bin",
-    "index.js",
-    "LICENSE",
-    "lib",
-    "middleware",
-    "schemas"
+    "src",
+    "LICENSE"
   ],
   "devDependencies": {
     "@babel/core": "^7.9.0",
